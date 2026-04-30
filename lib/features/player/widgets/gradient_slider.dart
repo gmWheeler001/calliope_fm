@@ -2,7 +2,11 @@ import 'package:calliope_fm/core/constants/ui_constants.dart';
 import 'package:flutter/material.dart';
 
 class GradientSlider extends StatelessWidget {
-  const GradientSlider({required this.volume, required this.onChanged});
+  const GradientSlider({
+    super.key,
+    required this.volume,
+    required this.onChanged,
+  });
 
   final double volume;
   final ValueChanged<double> onChanged;
@@ -14,7 +18,7 @@ class GradientSlider extends StatelessWidget {
         thumbShape: SliderComponentShape.noThumb, // removes thumb
         overlayShape: SliderComponentShape.noOverlay, // removes ripple
         trackHeight: 6,
-        trackShape: _GradientTrackShape(), // 👈 custom gradient track
+        trackShape: _GradientTrackShape(), // custom gradient track
         inactiveTrackColor: Colors.white.withAlpha(33),
       ),
       child: Slider(
@@ -56,7 +60,8 @@ class _GradientTrackShape extends RoundedRectSliderTrackShape {
     final bool isLtr = textDirection == TextDirection.ltr;
 
     final Paint inactivePaint = Paint()
-      ..color = sliderTheme.inactiveTrackColor ?? Colors.white.withOpacity(0.3);
+      ..color =
+          sliderTheme.inactiveTrackColor ?? Colors.white.withValues(alpha: 0.3);
 
     // 👇 draw full rounded track FIRST
     final RRect fullTrack = RRect.fromRectAndRadius(trackRect, radius);

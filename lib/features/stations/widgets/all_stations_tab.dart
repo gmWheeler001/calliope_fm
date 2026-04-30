@@ -153,7 +153,7 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
                   stationsAsync.when(
                     data: (stations) {
                       if (stations.isEmpty) {
-                        SliverFillRemaining(
+                        return SliverFillRemaining(
                           child: _EmptyState(
                             onClear: () {
                               _searchController.clear();
