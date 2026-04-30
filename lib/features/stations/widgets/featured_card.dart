@@ -1,14 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:calliope_fm/core/constants/ui_constants.dart';
 import 'package:flutter/material.dart';
 
 import '../models/radio_station.dart';
 
 class FeaturedCard extends StatelessWidget {
-  const FeaturedCard({
-    super.key,
-    required this.station,
-    required this.onTap,
-  });
+  const FeaturedCard({super.key, required this.station, required this.onTap});
 
   final RadioStation station;
   final VoidCallback onTap;
@@ -16,7 +13,12 @@ class FeaturedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      margin: const EdgeInsets.fromLTRB(
+        UiConstants.marginFull,
+        UiConstants.marginFull,
+        UiConstants.marginFull,
+        UiConstants.marginHalf,
+      ),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -52,14 +54,14 @@ class FeaturedCard extends StatelessWidget {
   }
 
   Widget _fallback() => Container(
-        width: 80,
-        height: 80,
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Icon(Icons.radio, size: 36, color: Colors.grey),
-      );
+    width: 80,
+    height: 80,
+    decoration: BoxDecoration(
+      color: Colors.grey[200],
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: const Icon(Icons.radio, size: 36, color: Colors.grey),
+  );
 
   Widget _info() {
     return Column(
