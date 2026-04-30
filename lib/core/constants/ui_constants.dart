@@ -3,6 +3,7 @@
 
 abstract final class UiConstants {
   static const double paddingFull = 16.0;
-  static const double seperatorHalf = 8.0;
+  static const double seperatorFull = 8.0;
   static const double marginFull = 16.0;
+  static const double buttonCornerRadius = 16.0;
 }

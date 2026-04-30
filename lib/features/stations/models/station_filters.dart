@@ -1,3 +1,5 @@
+import 'package:calliope_fm/features/stations/providers/stations_providers.dart';
+
 enum StationOrder {
   votes,
   clickCount,
@@ -45,7 +47,7 @@ class StationFilters {
     bool clearMinBitrate = false,
   }) {
     return StationFilters(
-      tags: clearTags ? [] : tags ?? this.tags,
+      tags: clearTags ? [genres.first] : tags ?? this.tags,
       country: clearCountry ? null : (country ?? this.country),
       language: clearLanguage ? null : (language ?? this.language),
       minBitrate: clearMinBitrate ? null : (minBitrate ?? this.minBitrate),

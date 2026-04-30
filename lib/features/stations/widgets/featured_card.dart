@@ -44,8 +44,8 @@ class FeaturedCard extends StatelessWidget {
         width: 80,
         height: 80,
         fit: BoxFit.cover,
-        errorWidget: (_, _, _) => _fallback(),
-        placeholder: (_, _) =>
+        errorWidget: (context, url, _) => _fallback(),
+        placeholder: (context, _) =>
             Container(width: 80, height: 80, color: Colors.grey[200]),
       ),
     );

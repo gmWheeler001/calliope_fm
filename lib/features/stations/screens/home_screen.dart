@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-// import '../widgets/all_stations_tab.dart';
-import '../widgets/filters_sheet.dart';
+import '../widgets/all_stations_tab.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -11,39 +10,17 @@ class HomeScreen extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Calliope FM'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.tune),
-              tooltip: 'Filters',
-              onPressed: () => _showFilters(context),
-            ),
-          ],
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'All'),
-              Tab(text: 'Favourites'),
-              Tab(text: 'History'),
+        body: SafeArea(
+          bottom: false,
+          child: const TabBarView(
+            children: [
+              AllStationsTab(),
+              Center(child: Text('No favourites yet')),
+              Center(child: Text('No history yet')),
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            Container(), // TODO: AllStationsTab(),
-            Center(child: Text('No favourites yet')),
-            Center(child: Text('No history yet')),
-          ],
-        ),
       ),
-    );
-  }
-
-  void _showFilters(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => const FiltersSheet(),
     );
   }
 }

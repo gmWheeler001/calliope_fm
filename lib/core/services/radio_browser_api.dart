@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:calliope_fm/features/stations/providers/stations_providers.dart';
 import 'package:http/http.dart' as http;
 
 import '../../features/stations/models/radio_station.dart';
@@ -27,8 +28,10 @@ class RadioBrowserApi {
       'order': f.order.apiValue,
     };
 
+    final cleanTags = f.tags.where((t) => t != genres.first);
+
     if (query.isNotEmpty) params['name'] = query;
-    if (f.tags.isNotEmpty) params['tag'] = f.tags.toString();
+    if (cleanTags.isNotEmpty) params['tagList'] = cleanTags.join(',');
     if (f.country != null) params['country'] = f.country!;
     if (f.language != null) params['language'] = f.language!;
     if (f.minBitrate != null) params['bitrateMin'] = '${f.minBitrate}';

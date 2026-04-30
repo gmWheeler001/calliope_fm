@@ -51,8 +51,8 @@ class _StationAvatar extends StatelessWidget {
         width: 48,
         height: 48,
         fit: BoxFit.cover,
-        errorWidget: (_, _, _) => _fallback(),
-        placeholder: (_, _) => Container(
+        errorWidget: (context, url, _) => _fallback(),
+        placeholder: (context, _) => Container(
           width: 48,
           height: 48,
           color: Colors.grey[200],

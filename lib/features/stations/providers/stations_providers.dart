@@ -25,8 +25,27 @@ final currentStationProvider = StateProvider<RadioStation?>((ref) => null);
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
 final stationFiltersProvider = StateProvider<StationFilters>(
-  (ref) => const StationFilters(tags: []),
+  (ref) => StationFilters(tags: [genres.first]),
 );
+
+const genres = [
+  'all',
+  'news',
+  'pop',
+  'rock',
+  'jazz',
+  'classical',
+  'country',
+  'electronic',
+  'hip-hop',
+  'indie',
+  'metal',
+  'folk',
+  'reggae',
+  'soul',
+  'blues',
+  'talk',
+];
 
 // ── Stations list (paginated) ────────────────────────────────────────────────
 
