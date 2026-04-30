@@ -37,15 +37,19 @@ class GenreChips extends ConsumerWidget {
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final genre = _genres[index];
-          final selected = filters.tag == genre;
+          final selected = filters.tags.contains(genre);
           return FilterChip(
             label: Text(genre),
             selected: selected,
             onSelected: (isSelected) {
               final notifier = ref.read(stationFiltersProvider.notifier);
-              notifier.state = isSelected
-                  ? filters.copyWith(tag: genre)
-                  : filters.copyWith(clearTag: true);
+              if (isSelected) {
+                notifier.state = filters.copyWith(tags: filters.tags + [genre]);
+              } else {
+                final newFilters = filters.tags;
+                newFilters.remove(genre);
+                notifier.state = filters.copyWith(tags: newFilters);
+              }
             },
           );
         },

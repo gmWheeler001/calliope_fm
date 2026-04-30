@@ -24,8 +24,9 @@ final currentStationProvider = StateProvider<RadioStation?>((ref) => null);
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
-final stationFiltersProvider =
-    StateProvider<StationFilters>((ref) => const StationFilters());
+final stationFiltersProvider = StateProvider<StationFilters>(
+  (ref) => const StationFilters(tags: []),
+);
 
 // ── Stations list (paginated) ────────────────────────────────────────────────
 

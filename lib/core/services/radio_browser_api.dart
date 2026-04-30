@@ -19,7 +19,7 @@ class RadioBrowserApi {
     int offset = 0,
     int limit = AppConstants.stationsPageSize,
   }) async {
-    final f = filters ?? const StationFilters();
+    final f = filters ?? const StationFilters(tags: []);
     final params = <String, String>{
       'offset': '$offset',
       'limit': '$limit',
@@ -28,13 +28,14 @@ class RadioBrowserApi {
     };
 
     if (query.isNotEmpty) params['name'] = query;
-    if (f.tag != null) params['tag'] = f.tag!;
+    if (f.tags.isNotEmpty) params['tag'] = f.tags.toString();
     if (f.country != null) params['country'] = f.country!;
     if (f.language != null) params['language'] = f.language!;
     if (f.minBitrate != null) params['bitrateMin'] = '${f.minBitrate}';
 
-    final uri = Uri.parse('${AppConstants.baseURL}/stations/search')
-        .replace(queryParameters: params);
+    final uri = Uri.parse(
+      '${AppConstants.baseURL}/stations/search',
+    ).replace(queryParameters: params);
 
     final response = await _client.get(uri, headers: _headers);
 

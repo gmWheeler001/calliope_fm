@@ -5,44 +5,47 @@ enum StationOrder {
   name;
 
   String get apiValue => switch (this) {
-        StationOrder.votes => 'votes',
-        StationOrder.clickCount => 'clickcount',
-        StationOrder.trendingValue => 'clicktrend',
-        StationOrder.name => 'name',
-      };
+    StationOrder.votes => 'votes',
+    StationOrder.clickCount => 'clickcount',
+    StationOrder.trendingValue => 'clicktrend',
+    StationOrder.name => 'name',
+  };
 }
 
 class StationFilters {
   const StationFilters({
-    this.tag,
+    required this.tags,
     this.country,
     this.language,
     this.minBitrate,
     this.order = StationOrder.clickCount,
   });
 
-  final String? tag;
+  final List<String> tags;
   final String? country;
   final String? language;
   final int? minBitrate;
   final StationOrder order;
 
   bool get hasFilters =>
-      tag != null || country != null || language != null || minBitrate != null;
+      tags.isNotEmpty ||
+      country != null ||
+      language != null ||
+      minBitrate != null;
 
   StationFilters copyWith({
-    String? tag,
+    List<String>? tags,
     String? country,
     String? language,
     int? minBitrate,
     StationOrder? order,
-    bool clearTag = false,
+    bool clearTags = false,
     bool clearCountry = false,
     bool clearLanguage = false,
     bool clearMinBitrate = false,
   }) {
     return StationFilters(
-      tag: clearTag ? null : (tag ?? this.tag),
+      tags: clearTags ? [] : tags ?? this.tags,
       country: clearCountry ? null : (country ?? this.country),
       language: clearLanguage ? null : (language ?? this.language),
       minBitrate: clearMinBitrate ? null : (minBitrate ?? this.minBitrate),
@@ -53,12 +56,12 @@ class StationFilters {
   @override
   bool operator ==(Object other) =>
       other is StationFilters &&
-      other.tag == tag &&
+      other.tags == tags &&
       other.country == country &&
       other.language == language &&
       other.minBitrate == minBitrate &&
       other.order == order;
 
   @override
-  int get hashCode => Object.hash(tag, country, language, minBitrate, order);
+  int get hashCode => Object.hash(tags, country, language, minBitrate, order);
 }

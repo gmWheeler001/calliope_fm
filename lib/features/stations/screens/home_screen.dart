@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // import '../widgets/all_stations_tab.dart';
-// import '../widgets/filters_sheet.dart';
+import '../widgets/filters_sheet.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -43,7 +43,7 @@ class HomeScreen extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => Container(), // TODO const FiltersSheet(),
+      builder: (_) => const FiltersSheet(),
     );
   }
 }
