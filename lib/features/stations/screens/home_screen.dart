@@ -3,6 +3,8 @@ import 'package:calliope_fm/features/header/header_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../favourites/widgets/favourites_tab.dart';
+import '../../history/widgets/history_tab.dart';
 import '../../player/widgets/mini_player.dart';
 import '../widgets/all_stations_tab.dart';
 
@@ -75,8 +77,8 @@ class HomeScreen extends StatelessWidget {
                               child: const TabBarView(
                                 children: [
                                   AllStationsTab(),
-                                  Center(child: Text('No favourites yet')),
-                                  Center(child: Text('No history yet')),
+                                  FavouritesTab(),
+                                  HistoryTab(),
                                 ],
                               ),
                             ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../favourites/providers/favourites_provider.dart';
 import '../models/radio_player_state.dart';
 import '../providers/player_provider.dart';
 
@@ -16,6 +17,9 @@ class PlayerScreen extends ConsumerWidget {
     final notifier = ref.read(playerNotifierProvider.notifier);
     final station = playerState.station;
     final theme = Theme.of(context);
+    final favourites = ref.watch(favouritesNotifierProvider);
+    final isFav = station != null &&
+        ref.watch(favouritesNotifierProvider.notifier).isFavourite(station.stationUuid);
 
     return Scaffold(
       appBar: AppBar(
@@ -26,6 +30,19 @@ class PlayerScreen extends ConsumerWidget {
         title: const Text('Now Playing'),
         centerTitle: true,
         actions: [
+          if (station != null)
+            IconButton(
+              icon: Icon(
+                isFav ? Icons.favorite : Icons.favorite_border,
+                color: isFav ? Colors.redAccent : null,
+              ),
+              onPressed: favourites.isLoading
+                  ? null
+                  : () => ref
+                      .read(favouritesNotifierProvider.notifier)
+                      .toggle(station),
+              tooltip: isFav ? 'Remove from favourites' : 'Add to favourites',
+            ),
           IconButton(
             icon: Icon(
               Icons.thumb_up_outlined,

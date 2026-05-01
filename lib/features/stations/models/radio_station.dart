@@ -48,6 +48,21 @@ class RadioStation {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'stationuuid': stationUuid,
+        'name': name,
+        'url_resolved': streamUrl,
+        'url': streamUrl,
+        'favicon': faviconUrl ?? '',
+        'tags': tags,
+        'country': country,
+        'countrycode': countryCode,
+        'language': language,
+        'votes': votes,
+        'bitrate': bitrate,
+        'lastcheckok': isUp ? 1 : 0,
+      };
+
   static String? _nullIfEmpty(String? s) =>
       (s == null || s.isEmpty) ? null : s;
 

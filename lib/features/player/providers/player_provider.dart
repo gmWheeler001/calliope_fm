@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../history/providers/history_provider.dart';
 import '../../stations/models/radio_station.dart';
 import '../../stations/providers/stations_providers.dart';
 import '../models/radio_player_state.dart';
@@ -16,6 +17,7 @@ class PlayerNotifier extends _$PlayerNotifier {
   late final AudioPlayer _player;
   StreamSubscription<dynamic>? _interruptionSub;
   Timer? _errorSkipTimer;
+  String? _lastHistoryUuid;
 
   @override
   RadioPlayerState build() {
@@ -51,6 +53,14 @@ class PlayerNotifier extends _$PlayerNotifier {
           status = PlaybackStatus.paused;
       }
       state = state.copyWith(status: status, isBuffering: buffering);
+
+      if (ps.processingState == ProcessingState.ready && ps.playing) {
+        final station = state.station;
+        if (station != null && station.stationUuid != _lastHistoryUuid) {
+          _lastHistoryUuid = station.stationUuid;
+          ref.read(historyNotifierProvider.notifier).add(station);
+        }
+      }
     });
 
     _player.playbackEventStream.listen(
