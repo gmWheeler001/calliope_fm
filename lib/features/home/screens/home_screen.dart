@@ -1,12 +1,13 @@
 import 'package:calliope_fm/core/constants/ui_constants.dart';
-import 'package:calliope_fm/features/header/header_widget.dart';
+import 'package:calliope_fm/features/home/widgets/header_widget.dart';
+import 'package:calliope_fm/widgets/gradient_blob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../favourites/widgets/favourites_tab.dart';
 import '../../history/widgets/history_tab.dart';
 import '../../player/widgets/mini_player.dart';
-import '../widgets/all_stations_tab.dart';
+import '../../stations/widgets/all_stations_tab.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -32,18 +33,12 @@ class HomeScreen extends StatelessWidget {
               Positioned(
                 top: -1 * (height / 8),
                 right: -1 * (height / 8),
-                child: _GradientBlob(
-                  color: Color(0xFF7c3aed),
-                  size: height / 2,
-                ),
+                child: GradientBlob(color: Color(0xFF7c3aed), size: height / 2),
               ),
               Positioned(
                 bottom: height / 8,
                 left: -1 * ((height / 3) / 2),
-                child: _GradientBlob(
-                  color: Color(0xFFec4899),
-                  size: height / 3,
-                ),
+                child: GradientBlob(color: Color(0xFFec4899), size: height / 3),
               ),
 
               // Layer two, the application content
@@ -94,28 +89,6 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// The blob widget — a simple blurred circle
-class _GradientBlob extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _GradientBlob({required this.color, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [color.withValues(alpha: 0.33), Colors.transparent],
-          stops: [0.0, 1.0],
         ),
       ),
     );

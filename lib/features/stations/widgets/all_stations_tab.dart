@@ -70,10 +70,9 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
   }
 
   void _onStationTap(RadioStation station) {
-    ref.read(playerNotifierProvider.notifier).play(
-      station,
-      source: PlaySource.stations,
-    );
+    ref
+        .read(playerNotifierProvider.notifier)
+        .play(station, source: PlaySource.stations);
     context.push('/player');
   }
 
@@ -81,9 +80,11 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
   Widget build(BuildContext context) {
     final stationsAsync = ref.watch(stationsNotifierProvider);
     final featuredAsync = ref.watch(featuredStationProvider);
+    final width = MediaQuery.sizeOf(context).width;
 
     return Column(
       children: [
+        // Search input
         Padding(
           padding: const EdgeInsets.fromLTRB(
             UiConstants.paddingFull,
@@ -115,11 +116,14 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
             ),
           ),
         ),
+
         // Genre chips
         GenreChips(),
 
         // Content
         Expanded(
+          // Fade content out at the top, here to prevent a hard edge on scrolling upto the genre chips.
+          // Bottom fade handled further into the widget tree.
           child: ShaderMask(
             shaderCallback: (Rect rect) {
               return LinearGradient(
@@ -147,7 +151,9 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
                               onTap: () => _onStationTap(station),
                             )
                           : const SizedBox.shrink(),
-                      loading: () => const SkeletonCard(height: 120),
+                      loading: () => SkeletonCard(
+                        height: width / 2.3,
+                      ), // same ratio as the feature card.
                       error: (e, _) => const SizedBox.shrink(),
                     ),
                   ),

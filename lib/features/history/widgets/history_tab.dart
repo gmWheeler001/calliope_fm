@@ -1,3 +1,4 @@
+import 'package:calliope_fm/core/constants/ui_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,11 +12,14 @@ import '../providers/history_provider.dart';
 class HistoryTab extends ConsumerWidget {
   const HistoryTab({super.key});
 
-  void _onStationTap(BuildContext context, WidgetRef ref, RadioStation station) {
-    ref.read(playerNotifierProvider.notifier).play(
-      station,
-      source: PlaySource.history,
-    );
+  void _onStationTap(
+    BuildContext context,
+    WidgetRef ref,
+    RadioStation station,
+  ) {
+    ref
+        .read(playerNotifierProvider.notifier)
+        .play(station, source: PlaySource.history);
     context.push('/player');
   }
 
@@ -51,22 +55,22 @@ class _HistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        StationCard(station: entry.station, onTap: onTap),
-        Positioned(
-          right: 16,
-          bottom: 6,
-          child: Text(
-            _formatTime(entry.lastListenedAt),
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.45),
-                ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          StationCard(station: entry.station, onTap: onTap),
+          Positioned(
+            left: 16,
+            bottom: -1 * UiConstants.seperatorFull,
+            child: Text(
+              _formatTime(entry.lastListenedAt),
+              style: TextStyle(fontSize: 12, color: Colors.white38),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -90,9 +94,19 @@ class _HistoryCard extends StatelessWidget {
   }
 
   String _monthAbbr(int month) => const [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-      ][month - 1];
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ][month - 1];
 }
 
 class _EmptyHistory extends StatelessWidget {

@@ -32,6 +32,7 @@ class CalliopeApp extends ConsumerWidget {
       theme: AppTheme.theme,
       themeMode: ThemeMode.dark,
       routerConfig: router,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

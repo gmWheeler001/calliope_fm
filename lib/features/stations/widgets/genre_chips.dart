@@ -76,6 +76,7 @@ class GenreChips extends ConsumerWidget {
               child: Text(
                 capitalizeFirstLetter(genre),
                 style: TextStyle(
+                  fontSize: 14,
                   color: selected ? Colors.white : Colors.white.withAlpha(200),
                   fontWeight: FontWeight.w500,
                 ),

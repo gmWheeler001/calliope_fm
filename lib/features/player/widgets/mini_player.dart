@@ -93,6 +93,7 @@ class MiniPlayer extends ConsumerWidget {
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
+                            softWrap: false,
                           ),
                           if (playerState.hasError)
                             Text(
@@ -133,13 +134,14 @@ class MiniPlayer extends ConsumerWidget {
                                   onChanged: notifier.setVolume,
                                 ),
                               ),
+                              SizedBox(width: UiConstants.seperatorHalf),
                             ],
                           ),
                         ],
                       ),
                     ),
 
-                    SizedBox(width: UiConstants.seperatorFull),
+                    SizedBox(width: UiConstants.seperatorHalf),
 
                     // Player controlls
                     if (playerState.status == PlaybackStatus.loading)
@@ -234,21 +236,15 @@ class _MiniArtworkPlaceholder extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Color(0xFF4A148C), // dark purple
-            Color(0xFFCE93D8), // light purple
-          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF4A148C), Color(0xFFCE93D8)],
         ),
-        shape: BoxShape.rectangle, // remove if you want square
       ),
       padding: const EdgeInsets.all(
         8,
       ), // keeps spacing similar to IconButton feel
-      child: Icon(
-        Icons.radio,
-        size: 24,
-        color: Colors.white, // better contrast on gradient
-      ),
+      child: Icon(Icons.radio, size: 24, color: Colors.white),
     );
   }
 }
