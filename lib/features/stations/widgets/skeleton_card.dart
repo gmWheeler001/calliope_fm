@@ -12,11 +12,7 @@ class SkeletonCard extends StatelessWidget {
       height: height,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF4A148C), Color(0xFFCE93D8)],
-        ),
+        gradient: UiConstants.purpleGradient,
         borderRadius: BorderRadius.circular(UiConstants.buttonCornerRadius),
       ),
     );

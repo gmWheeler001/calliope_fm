@@ -52,8 +52,7 @@ class MiniPlayer extends ConsumerWidget {
             child: InkWell(
               onTap: () => context.push('/player'),
               borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
-              child: Container(
-                height: 116,
+              child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: UiConstants.paddingFull,
                   vertical: UiConstants.paddingFull,
@@ -83,7 +82,7 @@ class MiniPlayer extends ConsumerWidget {
                     // Station name + buffering/error indicator
                     Expanded(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -94,7 +93,6 @@ class MiniPlayer extends ConsumerWidget {
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            softWrap: false,
                           ),
                           if (playerState.hasError)
                             Text(
@@ -179,11 +177,7 @@ class MiniPlayer extends ConsumerWidget {
                       Container(
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [UiConstants.darkPurple, UiConstants.lightPurple],
-                          ),
+                          gradient: UiConstants.purpleGradient,
                         ),
                         child: IconButton(
                           icon: Icon(

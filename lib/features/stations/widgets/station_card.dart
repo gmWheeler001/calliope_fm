@@ -20,11 +20,7 @@ class StationCard extends StatelessWidget {
         station.name,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          fontSize: 16,
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-        ),
+        style: Theme.of(context).textTheme.titleMedium,
       ),
       subtitle: Text(
         [
@@ -33,7 +29,9 @@ class StationCard extends StatelessWidget {
         ].join(' · '),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontSize: 14, color: Colors.white38),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Colors.white38,
+        ),
       ),
       trailing: station.isUp ? const LiveBadge() : null,
       onTap: onTap,

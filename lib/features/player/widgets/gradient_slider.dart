@@ -87,9 +87,7 @@ class _GradientTrackShape extends RoundedRectSliderTrackShape {
           );
 
     final Paint activePaint = Paint()
-      ..shader = const LinearGradient(
-        colors: [UiConstants.darkPurple, UiConstants.lightPurple],
-      ).createShader(trackRect);
+      ..shader = UiConstants.purpleGradient.createShader(trackRect);
 
     // 👇 clip to flat rect → removes rounded seam
     canvas.save();

@@ -48,12 +48,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Positioned(
                 top: -1 * (height / 8),
                 right: -1 * (height / 8),
-                child: GradientBlob(color: Color(0xFF7c3aed), size: height / 2),
+                child: GradientBlob(color: UiConstants.violetBlob, size: height / 2),
               ),
               Positioned(
                 bottom: height / 8,
                 left: -1 * ((height / 3) / 2),
-                child: GradientBlob(color: Color(0xFFec4899), size: height / 3),
+                child: GradientBlob(color: UiConstants.pinkBlob, size: height / 3),
               ),
 
               // Layer two, the application content

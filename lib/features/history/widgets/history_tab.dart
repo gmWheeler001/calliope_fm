@@ -70,10 +70,13 @@ class _HistoryCard extends StatelessWidget {
           StationCard(station: entry.station, onTap: onTap),
           Positioned(
             left: 16,
+            right: 16,
             bottom: -1 * UiConstants.seperatorFull,
             child: Text(
               _formatTime(entry.lastListenedAt),
               style: TextStyle(fontSize: 12, color: Colors.white38),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

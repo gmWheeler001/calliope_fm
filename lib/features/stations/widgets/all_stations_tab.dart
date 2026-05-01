@@ -107,12 +107,6 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
                       },
                     )
                   : null,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  UiConstants.buttonCornerRadius,
-                ),
-              ),
-              contentPadding: EdgeInsets.zero,
             ),
           ),
         ),

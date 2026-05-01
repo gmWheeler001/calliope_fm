@@ -11,18 +11,12 @@ class LiveBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.teal.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.28),
-          width: 0.5,
-        ),
+        border: Border.all(color: UiConstants.glassOutlineColor, width: 0.5),
       ),
-      child: const Text(
+      child: Text(
         'LIVE',
-        style: TextStyle(
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
           color: Colors.tealAccent,
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
         ),
       ),
     );
@@ -44,14 +38,11 @@ class GenreTag extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.deepPurple.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.28),
-          width: 0.5,
-        ),
+        border: Border.all(color: UiConstants.glassOutlineColor, width: 0.5),
       ),
       child: Text(
         name,
-        style: const TextStyle(fontSize: 12, color: Colors.white54),
+        style: Theme.of(context).textTheme.bodySmall,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

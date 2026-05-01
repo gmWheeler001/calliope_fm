@@ -46,12 +46,12 @@ class PlayerScreen extends ConsumerWidget {
               Positioned(
                 top: -1 * (height / 8),
                 left: -1 * (height / 8),
-                child: GradientBlob(color: Color(0xFF7c3aed), size: height / 2),
+                child: GradientBlob(color: UiConstants.violetBlob, size: height / 2),
               ),
               Positioned(
                 top: height / 8,
                 right: -1 * ((height / 3) / 2),
-                child: GradientBlob(color: Color(0xFFec4899), size: height / 3),
+                child: GradientBlob(color: UiConstants.pinkBlob, size: height / 3),
               ),
 
               // Layer two, the application content
@@ -121,13 +121,15 @@ class PlayerScreen extends ConsumerWidget {
                                 color: Colors.white38,
                               ),
                               textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             if (station.tagList.isNotEmpty) ...[
                               const SizedBox(height: UiConstants.seperatorFull),
-
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
+                              Wrap(
                                 spacing: UiConstants.seperatorFull,
+                                runSpacing: UiConstants.seperatorHalf,
+                                alignment: WrapAlignment.center,
                                 children: [
                                   for (final tag in station.tagList.take(2))
                                     GenreTag(name: tag),
@@ -257,12 +259,12 @@ class _ArtworkWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(
                   UiConstants.cardCornerRadius,
                 ),
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    UiConstants.darkPurple, // dark purple
-                    UiConstants.lightPurple, // light purple
+                    UiConstants.darkPurple,
+                    UiConstants.lightPurple,
                     Colors.white,
                   ],
                   stops: [0.2, 0.85, 1],
@@ -408,11 +410,7 @@ class _PlayPauseButton extends StatelessWidget {
       height: 72,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(UiConstants.buttonCornerRadius),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [UiConstants.darkPurple, UiConstants.lightPurple],
-        ),
+        gradient: UiConstants.purpleGradient,
       ),
       child: IconButton(
         icon: Icon(isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded),
@@ -589,13 +587,7 @@ class _SleepPresetButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(
             UiConstants.buttonCornerRadius / 2,
           ),
-          gradient: isActive
-              ? const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [UiConstants.darkPurple, UiConstants.lightPurple],
-                )
-              : null,
+          gradient: isActive ? UiConstants.purpleGradient : null,
           color: isActive ? null : Colors.deepPurple.withValues(alpha: 0.15),
           border: Border.all(
             color: isActive

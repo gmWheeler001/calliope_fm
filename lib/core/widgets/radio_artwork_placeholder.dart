@@ -9,13 +9,7 @@ class RadioArtworkPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [UiConstants.darkPurple, UiConstants.lightPurple],
-        ),
-      ),
+      decoration: const BoxDecoration(gradient: UiConstants.purpleGradient),
       padding: const EdgeInsets.all(8),
       child: Icon(Icons.radio, size: iconSize, color: Colors.white),
     );

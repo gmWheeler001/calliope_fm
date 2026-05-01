@@ -60,16 +60,7 @@ class GenreChips extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(
                   UiConstants.buttonCornerRadius,
                 ),
-                gradient: selected
-                    ? const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          UiConstants.darkPurple, // brighter purple
-                          UiConstants.lightPurple, // pinkish purple
-                        ],
-                      )
-                    : null,
+                gradient: selected ? UiConstants.purpleGradient : null,
                 color: selected ? null : Colors.black.withAlpha(44),
                 border: Border.all(color: Colors.white.withAlpha(17)),
               ),
@@ -80,6 +71,8 @@ class GenreChips extends ConsumerWidget {
                   color: selected ? Colors.white : Colors.white.withAlpha(200),
                   fontWeight: FontWeight.w500,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           );

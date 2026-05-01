@@ -14,6 +14,7 @@ class FeaturedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
+    final tt = Theme.of(context).textTheme;
 
     return Padding(
       padding: const EdgeInsets.all(UiConstants.paddingFull),
@@ -33,7 +34,7 @@ class FeaturedCard extends StatelessWidget {
                       UiConstants.cardCornerRadius,
                     ),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.28),
+                      color: UiConstants.glassOutlineColor,
                       width: 0.5,
                     ),
                   ),
@@ -44,13 +45,13 @@ class FeaturedCard extends StatelessWidget {
               Positioned(
                 top: -1 * (width / 2.3),
                 right: -1 * (width / 2.6),
-                child: GradientBlob(color: Color(0xFF7c3aed), size: width),
+                child: GradientBlob(color: UiConstants.violetBlob, size: width),
               ),
               Positioned(
                 bottom: -1 * (width / 5),
                 left: -1 * (width / 5),
                 child: GradientBlob(
-                  color: Color(0xFFec4899),
+                  color: UiConstants.pinkBlob,
                   size: width * 0.6,
                 ),
               ),
@@ -71,16 +72,9 @@ class FeaturedCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: UiConstants.seperatorFull),
-                    const Text(
-                      'FEATURED STATION',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white38,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    Text('FEATURED STATION', style: tt.titleSmall),
                     SizedBox(height: UiConstants.seperatorHalf),
-                    _info(),
+                    _info(context),
                   ],
                 ),
               ),
@@ -95,17 +89,14 @@ class FeaturedCard extends StatelessWidget {
     if (station.faviconUrl == null) return _fallback();
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Container(
-        color: Colors.red,
-        child: CachedNetworkImage(
-          imageUrl: station.faviconUrl!,
-          width: 80,
-          height: 80,
-          fit: BoxFit.cover,
-          errorWidget: (context, url, _) => _fallback(),
-          placeholder: (context, _) =>
-              Container(width: 80, height: 80, color: Colors.grey[200]),
-        ),
+      child: CachedNetworkImage(
+        imageUrl: station.faviconUrl!,
+        width: 80,
+        height: 80,
+        fit: BoxFit.cover,
+        errorWidget: (context, url, _) => _fallback(),
+        placeholder: (context, _) =>
+            Container(width: 80, height: 80, color: Colors.grey[200]),
       ),
     );
   }
@@ -120,7 +111,9 @@ class FeaturedCard extends StatelessWidget {
     child: const Icon(Icons.radio, size: 36, color: Colors.grey),
   );
 
-  Widget _info() {
+  Widget _info(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+
     var extraInformation = '';
     if (station.country.isNotEmpty) {
       extraInformation = station.country;
@@ -142,18 +135,14 @@ class FeaturedCard extends StatelessWidget {
       children: [
         Text(
           station.name,
-          style: const TextStyle(
-            fontSize: 24,
-            color: Colors.white,
-            fontWeight: FontWeight(600),
-          ),
+          style: tt.headlineSmall,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
 
         Text(
           extraInformation,
-          style: const TextStyle(fontSize: 12, color: Colors.white38),
+          style: tt.bodySmall?.copyWith(color: Colors.white38),
           maxLines: 4,
           overflow: TextOverflow.ellipsis,
         ),
@@ -169,28 +158,23 @@ class FeaturedCard extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: Colors.deepPurple.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(
-                  UiConstants.cardCornerRadius,
-                ),
+                borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.28),
+                  color: UiConstants.glassOutlineColor,
                   width: 0.5,
                 ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.thumb_up_rounded,
                     size: 12,
                     applyTextScaling: false,
                     color: Colors.white54,
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    station.votes.toString(),
-                    style: const TextStyle(fontSize: 12, color: Colors.white54),
-                  ),
+                  Text(station.votes.toString(), style: tt.bodySmall),
                 ],
               ),
             ),
@@ -200,11 +184,7 @@ class FeaturedCard extends StatelessWidget {
               height: 50,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [UiConstants.darkPurple, UiConstants.lightPurple],
-                ),
+                gradient: UiConstants.purpleGradient,
               ),
               child: const Icon(Icons.play_arrow_rounded, color: Colors.white),
             ),
