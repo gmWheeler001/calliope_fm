@@ -77,10 +77,34 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
     context.push('/player');
   }
 
+  bool _featuredMatchesFilters(
+    RadioStation station,
+    String query,
+    StationFilters filters,
+  ) {
+    final isDefaultFilter =
+        filters.tags.isEmpty || filters.tags.contains('all');
+    if (!isDefaultFilter) {
+      final stationTags =
+          station.tagList.map((t) => t.toLowerCase()).toSet();
+      final hasMatchingTag = filters.tags
+          .any((tag) => stationTags.contains(tag.toLowerCase()));
+      if (!hasMatchingTag) return false;
+    }
+    if (query.isNotEmpty) {
+      if (!station.name.toLowerCase().contains(query.toLowerCase())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     final stationsAsync = ref.watch(stationsNotifierProvider);
     final featuredAsync = ref.watch(featuredStationProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
+    final filters = ref.watch(stationFiltersProvider);
 
     return Column(
       children: [
@@ -136,16 +160,26 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
-                  // Featured hero card
+                  // Featured hero card — only shown when it matches active search/filters
                   SliverToBoxAdapter(
                     child: featuredAsync.when(
-                      data: (station) => station != null
-                          ? FeaturedCard(
-                              station: station,
-                              onTap: () => _onStationTap(station),
-                            )
+                      data: (station) =>
+                          station != null &&
+                                  _featuredMatchesFilters(
+                                    station,
+                                    searchQuery,
+                                    filters,
+                                  )
+                              ? FeaturedCard(
+                                  station: station,
+                                  onTap: () => _onStationTap(station),
+                                )
+                              : const SizedBox.shrink(),
+                      loading: () => searchQuery.isEmpty &&
+                              (filters.tags.isEmpty ||
+                                  filters.tags.contains('all'))
+                          ? const SkeletonCard(height: 150)
                           : const SizedBox.shrink(),
-                      loading: () => const SkeletonCard(height: 150),
                       error: (e, _) => const SizedBox.shrink(),
                     ),
                   ),
@@ -155,6 +189,7 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
                     data: (stations) {
                       if (stations.isEmpty) {
                         return SliverFillRemaining(
+                          hasScrollBody: false,
                           child: EmptyState(
                             icon: Icons.radio,
                             title: 'No stations found',
@@ -199,6 +234,7 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
                       ),
                     ),
                     error: (e, _) => SliverFillRemaining(
+                      hasScrollBody: false,
                       child: EmptyState(
                         icon: Icons.wifi_off,
                         title: 'Could not load stations',
@@ -209,6 +245,10 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
                         ),
                       ),
                     ),
+                  ),
+
+                  const SliverPadding(
+                    padding: EdgeInsets.only(bottom: 60),
                   ),
                 ],
               ),

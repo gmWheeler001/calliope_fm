@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:calliope_fm/core/constants/ui_constants.dart';
-import 'package:calliope_fm/features/player/widgets/gradient_slider.dart';
 import 'package:calliope_fm/core/widgets/gradient_blob.dart';
 import 'package:calliope_fm/core/widgets/station_badge.dart';
+import 'package:calliope_fm/features/player/widgets/gradient_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,12 +46,18 @@ class PlayerScreen extends ConsumerWidget {
               Positioned(
                 top: -1 * (height / 8),
                 left: -1 * (height / 8),
-                child: GradientBlob(color: UiConstants.violetBlob, size: height / 2),
+                child: GradientBlob(
+                  color: UiConstants.violetBlob,
+                  size: height / 2,
+                ),
               ),
               Positioned(
                 top: height / 8,
                 right: -1 * ((height / 3) / 2),
-                child: GradientBlob(color: UiConstants.pinkBlob, size: height / 3),
+                child: GradientBlob(
+                  color: UiConstants.pinkBlob,
+                  size: height / 3,
+                ),
               ),
 
               // Layer two, the application content
@@ -322,6 +328,7 @@ class _ErrorBanner extends StatelessWidget {
         horizontal: UiConstants.paddingFull,
         vertical: UiConstants.seperatorFull,
       ),
+      margin: EdgeInsets.only(bottom: UiConstants.marginFull),
       decoration: BoxDecoration(
         color: theme.colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(UiConstants.buttonCornerRadius),
@@ -487,7 +494,6 @@ class _ActionButton extends StatelessWidget {
     );
   }
 }
-
 
 void _showSleepTimerSheet(
   BuildContext context,
