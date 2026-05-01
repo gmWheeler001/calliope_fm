@@ -3,14 +3,29 @@ import 'package:calliope_fm/features/home/widgets/header_widget.dart';
 import 'package:calliope_fm/core/widgets/gradient_blob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../favourites/widgets/favourites_tab.dart';
 import '../../history/widgets/history_tab.dart';
 import '../../player/widgets/mini_player.dart';
 import '../../stations/widgets/all_stations_tab.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Android 13+ requires POST_NOTIFICATIONS at runtime for media notifications.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Permission.notification.request();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

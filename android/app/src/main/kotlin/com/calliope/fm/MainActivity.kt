@@ -1,4 +1,4 @@
-package com.example.calliope_fm
+package com.calliope.fm
 
 import io.flutter.embedding.android.FlutterActivity
 
