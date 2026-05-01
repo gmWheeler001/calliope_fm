@@ -81,7 +81,6 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
   Widget build(BuildContext context) {
     final stationsAsync = ref.watch(stationsNotifierProvider);
     final featuredAsync = ref.watch(featuredStationProvider);
-    final width = MediaQuery.sizeOf(context).width;
 
     return Column(
       children: [
@@ -152,9 +151,7 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
                               onTap: () => _onStationTap(station),
                             )
                           : const SizedBox.shrink(),
-                      loading: () => SkeletonCard(
-                        height: width / 2.3,
-                      ), // same ratio as the feature card.
+                      loading: () => const SkeletonCard(height: 150),
                       error: (e, _) => const SizedBox.shrink(),
                     ),
                   ),

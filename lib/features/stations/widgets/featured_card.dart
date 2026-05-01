@@ -18,103 +18,73 @@ class FeaturedCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(UiConstants.paddingFull),
       child: ClipRRect(
-        // Clips blur to rounded corners
         borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
-
-        child: AspectRatio(
-          aspectRatio: 2.3,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
-            child: Stack(
-              children: [
-                // Layer 0 — Some white to add contrast and make the card pop
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.deepPurple.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.cardCornerRadius,
-                      ),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.28),
-                        width: 0.5,
-                      ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
+          child: Stack(
+            children: [
+              // Layer 0 — tinted background + border (sizes to Stack)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(
+                      UiConstants.cardCornerRadius,
+                    ),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.28),
+                      width: 0.5,
                     ),
                   ),
                 ),
+              ),
 
-                // Layer 1 — background blobs (paint first, sit behind everything)
-                Positioned(
-                  top: -1 * (width / 2.3),
-                  right: -1 * (width / 2.6),
-                  child: GradientBlob(color: Color(0xFF7c3aed), size: width),
+              // Layer 1 — background blobs
+              Positioned(
+                top: -1 * (width / 2.3),
+                right: -1 * (width / 2.6),
+                child: GradientBlob(color: Color(0xFF7c3aed), size: width),
+              ),
+              Positioned(
+                bottom: -1 * (width / 5),
+                left: -1 * (width / 5),
+                child: GradientBlob(
+                  color: Color(0xFFec4899),
+                  size: width * 0.6,
                 ),
-                Positioned(
-                  bottom: -1 * (width / 5),
-                  left: -1 * (width / 5),
-                  child: GradientBlob(
-                    color: Color(0xFFec4899),
-                    size: width * 0.6,
-                  ),
-                ),
+              ),
 
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  right: 0,
-                  child: Opacity(opacity: 0.03, child: _artwork()),
-                ),
+              // Layer 1.5 — watermark artwork
+              Positioned.fill(child: Opacity(opacity: 0.03, child: _artwork())),
 
-                // Layer 2, the application content
-                Positioned.fill(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: UiConstants.paddingDouble,
-                      vertical: UiConstants.paddingFull,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: UiConstants.seperatorFull),
-                        const Text(
-                          'FEATURED STATION',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white38,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: UiConstants.seperatorHalf),
-                        Expanded(child: _info()),
-                      ],
-                    ),
-                  ),
-                ),
-
-                Positioned(
-                  bottom: UiConstants.paddingFull,
+              // Layer 2 — content (non-positioned: drives the Stack's height)
+              Padding(
+                padding: const EdgeInsets.only(
                   right: UiConstants.paddingFull,
-                  width: 50,
-                  height: 50,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          UiConstants.darkPurple, // dark purple
-                          UiConstants.lightPurple, // light purple
-                        ],
+                  bottom: 15,
+                  left: 22,
+                  top: 10,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: UiConstants.seperatorFull),
+                    const Text(
+                      'FEATURED STATION',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white38,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    child: Icon(Icons.play_arrow_rounded, color: Colors.white),
-                  ),
+                    SizedBox(height: UiConstants.seperatorHalf),
+                    _info(),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -188,42 +158,57 @@ class FeaturedCard extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
 
-        UnconstrainedBox(
-          child: Container(
-            margin: EdgeInsets.only(top: 6),
-            padding: EdgeInsets.symmetric(
-              horizontal: UiConstants.paddingHalf,
-              vertical: UiConstants.paddingHalf / 2,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.28),
-                width: 0.5,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 6),
+              padding: EdgeInsets.symmetric(
+                horizontal: UiConstants.paddingHalf,
+                vertical: UiConstants.paddingHalf / 2,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.deepPurple.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(
+                  UiConstants.cardCornerRadius,
+                ),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.28),
+                  width: 0.5,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.thumb_up_rounded,
+                    size: 12,
+                    applyTextScaling: false,
+                    color: Colors.white54,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    station.votes.toString(),
+                    style: const TextStyle(fontSize: 12, color: Colors.white54),
+                  ),
+                ],
               ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.thumb_up_rounded,
-                  size: 12,
-                  applyTextScaling: false,
-                  color: Colors.white54,
+            const Spacer(),
+            Container(
+              width: 50,
+              height: 50,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [UiConstants.darkPurple, UiConstants.lightPurple],
                 ),
-
-                SizedBox(width: 4),
-
-                Text(
-                  station.votes.toString(),
-                  style: const TextStyle(fontSize: 12, color: Colors.white54),
-                  maxLines: 4,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+              ),
+              child: const Icon(Icons.play_arrow_rounded, color: Colors.white),
             ),
-          ),
+          ],
         ),
       ],
     );

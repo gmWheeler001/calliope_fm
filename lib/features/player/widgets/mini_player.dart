@@ -130,9 +130,11 @@ class MiniPlayer extends ConsumerWidget {
                                 color: Colors.white30,
                               ),
                               Expanded(
-                                child: GradientSlider(
-                                  volume: playerState.volume,
-                                  onChanged: notifier.setVolume,
+                                child: IgnorePointer(
+                                  child: GradientSlider(
+                                    volume: playerState.volume,
+                                    onChanged: notifier.setVolume,
+                                  ),
                                 ),
                               ),
                               SizedBox(width: UiConstants.seperatorHalf),

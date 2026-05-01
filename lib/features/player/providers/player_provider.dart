@@ -233,6 +233,7 @@ class PlayerNotifier extends _$PlayerNotifier {
 
   void _startSleepCountdown() {
     final fadeSecs = AppConstants.sleepTimerFadeDurationSeconds;
+    var fadeStarted = false;
     _sleepTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final remaining = state.sleepTimerRemaining;
       if (remaining == null) {
@@ -246,6 +247,12 @@ class PlayerNotifier extends _$PlayerNotifier {
         _player.setVolume(_preFadeVolume);
         state = state.copyWith(volume: _preFadeVolume, clearSleepTimer: true);
       } else if (next.inSeconds <= fadeSecs) {
+        if (!fadeStarted) {
+          // Snapshot the actual current volume when the fade window opens,
+          // not when the timer was set — the user may have adjusted it since.
+          fadeStarted = true;
+          _preFadeVolume = state.volume;
+        }
         final faded = _preFadeVolume * (next.inSeconds / fadeSecs);
         _player.setVolume(faded);
         state = state.copyWith(sleepTimerRemaining: next, volume: faded);
