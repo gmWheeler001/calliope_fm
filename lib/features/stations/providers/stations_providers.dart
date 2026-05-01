@@ -16,10 +16,6 @@ final radioBrowserApiProvider = Provider<RadioBrowserApi>((ref) {
   return api;
 });
 
-// ── Current playing station ───────────────────────────────────────────────────
-
-final currentStationProvider = StateProvider<RadioStation?>((ref) => null);
-
 // ── Search & filter state ────────────────────────────────────────────────────
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
@@ -50,7 +46,6 @@ const genres = [
   'oldies',
   'reggae',
   'soul',
-  'blues',
   'talk',
   'top hits',
 ];

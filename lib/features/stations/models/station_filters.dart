@@ -29,12 +29,6 @@ class StationFilters {
   final int? minBitrate;
   final StationOrder order;
 
-  bool get hasFilters =>
-      tags.isNotEmpty ||
-      country != null ||
-      language != null ||
-      minBitrate != null;
-
   StationFilters copyWith({
     List<String>? tags,
     String? country,

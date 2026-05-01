@@ -13,6 +13,7 @@ class RadioPlayerState {
     this.hasVoted = false,
     this.hasNext = false,
     this.hasPrevious = false,
+    this.sleepTimerRemaining,
   });
 
   final RadioStation? station;
@@ -24,10 +25,12 @@ class RadioPlayerState {
   final bool hasVoted;
   final bool hasNext;
   final bool hasPrevious;
+  final Duration? sleepTimerRemaining;
 
   bool get isPlaying => status == PlaybackStatus.playing;
   bool get hasStation => station != null;
   bool get hasError => status == PlaybackStatus.error;
+  bool get hasSleepTimer => sleepTimerRemaining != null;
 
   RadioPlayerState copyWith({
     RadioStation? station,
@@ -39,9 +42,11 @@ class RadioPlayerState {
     bool? hasVoted,
     bool? hasNext,
     bool? hasPrevious,
+    Duration? sleepTimerRemaining,
     bool clearStation = false,
     bool clearError = false,
     bool clearCountdown = false,
+    bool clearSleepTimer = false,
   }) {
     return RadioPlayerState(
       station: clearStation ? null : (station ?? this.station),
@@ -54,6 +59,8 @@ class RadioPlayerState {
       hasVoted: hasVoted ?? this.hasVoted,
       hasNext: clearStation ? false : (hasNext ?? this.hasNext),
       hasPrevious: clearStation ? false : (hasPrevious ?? this.hasPrevious),
+      sleepTimerRemaining:
+          clearSleepTimer ? null : (sleepTimerRemaining ?? this.sleepTimerRemaining),
     );
   }
 }

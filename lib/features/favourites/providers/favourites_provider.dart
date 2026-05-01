@@ -38,6 +38,5 @@ class FavouritesNotifier extends _$FavouritesNotifier {
       StorageKeys.favouriteStationIds,
       stations.map((s) => jsonEncode(s.toJson())).toList(),
     );
-    await prefs.setBool(StorageKeys.hasFavourites, stations.isNotEmpty);
   }
 }

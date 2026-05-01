@@ -1,7 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:calliope_fm/core/constants/ui_constants.dart';
 import 'package:calliope_fm/features/player/widgets/gradient_slider.dart';
-import 'package:calliope_fm/widgets/gradient_blob.dart';
+import 'package:calliope_fm/core/widgets/gradient_blob.dart';
+import 'package:calliope_fm/core/widgets/station_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,34 +73,18 @@ class PlayerScreen extends ConsumerWidget {
                     elevation: 0,
                     leadingWidth: UiConstants.paddingFull + 44,
                     leading: UnconstrainedBox(
-                      child: _ActionButton(
-                        onPressed: () {
-                          context.pop();
-                        },
-                        iconData: Icons.arrow_back_rounded,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: UiConstants.paddingFull,
+                        ),
+                        child: _ActionButton(
+                          onPressed: () {
+                            context.pop();
+                          },
+                          iconData: Icons.arrow_back_rounded,
+                        ),
                       ),
                     ),
-
-                    actions: [
-                      if (station != null)
-                        _ActionButton(
-                          onPressed: favourites.isLoading
-                              ? null
-                              : () => ref
-                                    .read(favouritesNotifierProvider.notifier)
-                                    .toggle(station),
-                          iconData: isFav
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                        ),
-
-                      _ActionButton(
-                        onPressed: playerState.hasVoted ? null : notifier.vote,
-                        iconData: playerState.hasVoted
-                            ? Icons.thumb_up
-                            : Icons.thumb_up_outlined,
-                      ),
-                    ],
                   ),
                   body: SafeArea(
                     child: Padding(
@@ -144,11 +129,9 @@ class PlayerScreen extends ConsumerWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 spacing: UiConstants.seperatorFull,
                                 children: [
-                                  for (final genreName in station.tagList.take(
-                                    2,
-                                  ))
-                                    _GenreTag(name: genreName),
-                                  if (station.isUp) _LiveBadge(),
+                                  for (final tag in station.tagList.take(2))
+                                    GenreTag(name: tag),
+                                  if (station.isUp) const LiveBadge(),
                                 ],
                               ),
                             ],
@@ -168,6 +151,54 @@ class PlayerScreen extends ConsumerWidget {
                             playerState: playerState,
                             notifier: notifier,
                           ),
+
+                          SizedBox(height: UiConstants.paddingFull),
+
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            spacing: UiConstants.paddingFull,
+                            children: [
+                              if (station != null)
+                                _ActionButton(
+                                  onPressed: favourites.isLoading
+                                      ? null
+                                      : () => ref
+                                            .read(
+                                              favouritesNotifierProvider
+                                                  .notifier,
+                                            )
+                                            .toggle(station),
+                                  iconData: isFav
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                ),
+
+                              _ActionButton(
+                                onPressed: playerState.hasVoted
+                                    ? null
+                                    : notifier.vote,
+                                iconData: playerState.hasVoted
+                                    ? Icons.thumb_up
+                                    : Icons.thumb_up_outlined,
+                              ),
+
+                              _ActionButton(
+                                onPressed: () => _showSleepTimerSheet(
+                                  context,
+                                  notifier,
+                                  playerState,
+                                ),
+                                iconData: playerState.hasSleepTimer
+                                    ? Icons.bedtime
+                                    : Icons.bedtime_outlined,
+                              ),
+                            ],
+                          ),
+                          if (playerState.hasSleepTimer)
+                            _SleepTimerBanner(
+                              remaining: playerState.sleepTimerRemaining!,
+                              onCancel: notifier.cancelSleepTimer,
+                            ),
                           const Spacer(flex: 3),
                         ],
                       ),
@@ -338,7 +369,6 @@ class _PlaybackControls extends StatelessWidget {
             onPressed: playerState.hasPrevious ? notifier.skipPrevious : null,
             iconData: Icons.skip_previous_rounded,
             size: 60,
-            selfPadding: false,
           ),
         ),
         _PlayPauseButton(
@@ -353,7 +383,6 @@ class _PlaybackControls extends StatelessWidget {
             onPressed: playerState.hasNext ? notifier.skipNext : null,
             iconData: Icons.skip_next_rounded,
             size: 60,
-            selfPadding: false,
           ),
         ),
       ],
@@ -382,14 +411,11 @@ class _PlayPauseButton extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            UiConstants.darkPurple, // dark purple
-            UiConstants.lightPurple, // light purple
-          ],
+          colors: [UiConstants.darkPurple, UiConstants.lightPurple],
         ),
       ),
       child: IconButton(
-        icon: Icon(isLoading ? Icons.pause_rounded : Icons.play_arrow_rounded),
+        icon: Icon(isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded),
         iconSize: 36,
         color: Colors.white,
         onPressed: isLoading ? null : onPressed,
@@ -430,13 +456,11 @@ class _ActionButton extends StatelessWidget {
     required this.onPressed,
     required this.iconData,
     this.size = 44,
-    this.selfPadding = true,
   });
 
   final Function()? onPressed;
   final IconData iconData;
   final double size;
-  final bool selfPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -445,9 +469,6 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        margin: EdgeInsets.only(
-          left: selfPadding ? UiConstants.paddingFull : 0,
-        ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(
             UiConstants.buttonCornerRadius / 2,
@@ -469,61 +490,176 @@ class _ActionButton extends StatelessWidget {
   }
 }
 
-class _GenreTag extends StatelessWidget {
-  const _GenreTag({required this.name});
 
-  final String name;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 6),
-      padding: EdgeInsets.symmetric(
-        horizontal: UiConstants.paddingHalf,
-        vertical: UiConstants.paddingHalf / 2,
-      ),
+void _showSleepTimerSheet(
+  BuildContext context,
+  PlayerNotifier notifier,
+  RadioPlayerState playerState,
+) {
+  const presets = [5, 10, 30, 60];
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (_) => Container(
+      padding: const EdgeInsets.all(UiConstants.paddingFull),
       decoration: BoxDecoration(
-        color: Colors.deepPurple.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
+        color: const Color(0xFF1a1a2e),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(UiConstants.cardCornerRadius),
+        ),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.28),
+          color: Colors.white.withValues(alpha: 0.1),
           width: 0.5,
         ),
       ),
-      child: Text(
-        name,
-        style: const TextStyle(fontSize: 12, color: Colors.white54),
-        maxLines: 4,
-        overflow: TextOverflow.ellipsis,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              left: UiConstants.paddingHalf,
+              bottom: UiConstants.paddingFull,
+            ),
+            child: Text(
+              'Sleep Timer',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              for (final mins in presets)
+                _SleepPresetButton(
+                  label: '${mins}m',
+                  isActive: playerState.sleepTimerRemaining?.inMinutes == mins,
+                  onTap: () {
+                    notifier.setSleepTimer(mins);
+                    Navigator.of(context).pop();
+                  },
+                ),
+            ],
+          ),
+          if (playerState.hasSleepTimer) ...[
+            const SizedBox(height: UiConstants.paddingFull),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () {
+                  notifier.cancelSleepTimer();
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'Cancel timer',
+                  style: TextStyle(color: Colors.white54),
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: UiConstants.paddingHalf),
+        ],
+      ),
+    ),
+  );
+}
+
+class _SleepPresetButton extends StatelessWidget {
+  const _SleepPresetButton({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 68,
+        height: 68,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            UiConstants.buttonCornerRadius / 2,
+          ),
+          gradient: isActive
+              ? const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [UiConstants.darkPurple, UiConstants.lightPurple],
+                )
+              : null,
+          color: isActive ? null : Colors.deepPurple.withValues(alpha: 0.15),
+          border: Border.all(
+            color: isActive
+                ? Colors.transparent
+                : Colors.white.withValues(alpha: 0.2),
+            width: 0.5,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isActive ? Colors.white : Colors.white60,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+        ),
       ),
     );
   }
 }
 
-class _LiveBadge extends StatelessWidget {
-  const _LiveBadge();
+class _SleepTimerBanner extends StatelessWidget {
+  const _SleepTimerBanner({required this.remaining, required this.onCancel});
+
+  final Duration remaining;
+  final VoidCallback onCancel;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 6),
-      padding: EdgeInsets.symmetric(
-        horizontal: UiConstants.paddingHalf,
-        vertical: UiConstants.paddingHalf / 2,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.teal.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.28),
-          width: 0.5,
+    final mins = remaining.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final secs = remaining.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return Padding(
+      padding: const EdgeInsets.only(top: UiConstants.paddingFull),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: UiConstants.paddingFull,
+          vertical: UiConstants.paddingHalf,
         ),
-      ),
-      child: Text(
-        'Live',
-        style: const TextStyle(fontSize: 12, color: Colors.tealAccent),
-        maxLines: 4,
-        overflow: TextOverflow.ellipsis,
+        decoration: BoxDecoration(
+          color: Colors.deepPurple.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(UiConstants.buttonCornerRadius),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.15),
+            width: 0.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.bedtime, size: 16, color: Colors.white54),
+            const SizedBox(width: UiConstants.paddingHalf),
+            Text(
+              'Stops in $mins:$secs',
+              style: const TextStyle(color: Colors.white54, fontSize: 13),
+            ),
+            const SizedBox(width: UiConstants.paddingFull),
+            GestureDetector(
+              onTap: onCancel,
+              child: const Icon(Icons.close, size: 16, color: Colors.white38),
+            ),
+          ],
+        ),
       ),
     );
   }

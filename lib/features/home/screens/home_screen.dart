@@ -1,6 +1,6 @@
 import 'package:calliope_fm/core/constants/ui_constants.dart';
 import 'package:calliope_fm/features/home/widgets/header_widget.dart';
-import 'package:calliope_fm/widgets/gradient_blob.dart';
+import 'package:calliope_fm/core/widgets/gradient_blob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -60,11 +60,7 @@ class HomeScreen extends StatelessWidget {
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
                                   colors: [Colors.transparent, Colors.white],
-                                  //set stops as par your requirement
-                                  stops: [
-                                    0.8,
-                                    1.0,
-                                  ], // 50% transparent, 50% white
+                                  stops: [0.8, 1.0],
                                 ).createShader(rect);
                               },
                               blendMode: BlendMode.dstOut,

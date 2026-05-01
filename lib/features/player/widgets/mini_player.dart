@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:calliope_fm/core/constants/ui_constants.dart';
 import 'package:calliope_fm/features/player/widgets/gradient_slider.dart';
+import 'package:calliope_fm/core/widgets/radio_artwork_placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -71,11 +72,11 @@ class MiniPlayer extends ConsumerWidget {
                                 imageUrl: station.faviconUrl!,
                                 fit: BoxFit.cover,
                                 placeholder: (context, _) =>
-                                    const _MiniArtworkPlaceholder(),
+                                    const RadioArtworkPlaceholder(),
                                 errorWidget: (context, url, _) =>
-                                    const _MiniArtworkPlaceholder(),
+                                    const RadioArtworkPlaceholder(),
                               )
-                            : const _MiniArtworkPlaceholder(),
+                            : const RadioArtworkPlaceholder(),
                       ),
                     ),
                     const SizedBox(width: UiConstants.seperatorFull),
@@ -143,7 +144,7 @@ class MiniPlayer extends ConsumerWidget {
 
                     SizedBox(width: UiConstants.seperatorHalf),
 
-                    // Player controlls
+                    // Skip previous / next
                     if (playerState.status == PlaybackStatus.loading)
                       const SizedBox(width: 30, height: 30)
                     else
@@ -179,10 +180,7 @@ class MiniPlayer extends ConsumerWidget {
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [
-                              UiConstants.darkPurple, // dark purple
-                              UiConstants.lightPurple, // light purple
-                            ],
+                            colors: [UiConstants.darkPurple, UiConstants.lightPurple],
                           ),
                         ),
                         child: IconButton(
@@ -228,23 +226,3 @@ class MiniPlayer extends ConsumerWidget {
   }
 }
 
-class _MiniArtworkPlaceholder extends StatelessWidget {
-  const _MiniArtworkPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF4A148C), Color(0xFFCE93D8)],
-        ),
-      ),
-      padding: const EdgeInsets.all(
-        8,
-      ), // keeps spacing similar to IconButton feel
-      child: Icon(Icons.radio, size: 24, color: Colors.white),
-    );
-  }
-}

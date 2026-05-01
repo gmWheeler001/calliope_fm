@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:calliope_fm/core/constants/ui_constants.dart';
-import 'package:calliope_fm/widgets/gradient_blob.dart';
+import 'package:calliope_fm/core/widgets/gradient_blob.dart';
 import 'package:flutter/material.dart';
 
 import '../models/radio_station.dart';

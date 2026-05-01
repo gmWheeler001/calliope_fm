@@ -1,4 +1,3 @@
-// The blob widget — a simple blurred circle
 import 'package:flutter/material.dart';
 
 class GradientBlob extends StatelessWidget {
@@ -16,7 +15,7 @@ class GradientBlob extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [color.withValues(alpha: 0.33), Colors.transparent],
-          stops: [0.0, 1.0],
+          stops: const [0.0, 1.0],
         ),
       ),
     );

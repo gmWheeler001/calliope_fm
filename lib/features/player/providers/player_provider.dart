@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../favourites/providers/favourites_provider.dart';
 import '../../history/providers/history_provider.dart';
 import '../../stations/models/radio_station.dart';
@@ -22,6 +23,8 @@ class PlayerNotifier extends _$PlayerNotifier {
   Timer? _errorSkipTimer;
   String? _lastHistoryUuid;
   PlaySource _source = PlaySource.stations;
+  Timer? _sleepTimer;
+  double _preFadeVolume = 1.0;
 
   @override
   RadioPlayerState build() {
@@ -31,6 +34,7 @@ class PlayerNotifier extends _$PlayerNotifier {
 
     ref.onDispose(() {
       _errorSkipTimer?.cancel();
+      _sleepTimer?.cancel();
       _interruptionSub?.cancel();
       _player.dispose();
     });
@@ -133,6 +137,24 @@ class PlayerNotifier extends _$PlayerNotifier {
     if (state.station != null) await _playStation(state.station!);
   }
 
+  void setSleepTimer(int minutes) {
+    _sleepTimer?.cancel();
+    _preFadeVolume = state.volume;
+    state = state.copyWith(sleepTimerRemaining: Duration(minutes: minutes));
+    _startSleepCountdown();
+  }
+
+  void cancelSleepTimer() {
+    _sleepTimer?.cancel();
+    _sleepTimer = null;
+    if (state.volume != _preFadeVolume) {
+      _player.setVolume(_preFadeVolume);
+      state = state.copyWith(volume: _preFadeVolume, clearSleepTimer: true);
+    } else {
+      state = state.copyWith(clearSleepTimer: true);
+    }
+  }
+
   Future<void> vote() async {
     if (state.hasVoted || state.station == null) return;
     state = state.copyWith(hasVoted: true);
@@ -207,6 +229,30 @@ class PlayerNotifier extends _$PlayerNotifier {
       autoSkipCountdown: 5,
     );
     _startAutoSkipCountdown();
+  }
+
+  void _startSleepCountdown() {
+    final fadeSecs = AppConstants.sleepTimerFadeDurationSeconds;
+    _sleepTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final remaining = state.sleepTimerRemaining;
+      if (remaining == null) {
+        timer.cancel();
+        return;
+      }
+      final next = remaining - const Duration(seconds: 1);
+      if (next <= Duration.zero) {
+        timer.cancel();
+        _player.pause();
+        _player.setVolume(_preFadeVolume);
+        state = state.copyWith(volume: _preFadeVolume, clearSleepTimer: true);
+      } else if (next.inSeconds <= fadeSecs) {
+        final faded = _preFadeVolume * (next.inSeconds / fadeSecs);
+        _player.setVolume(faded);
+        state = state.copyWith(sleepTimerRemaining: next, volume: faded);
+      } else {
+        state = state.copyWith(sleepTimerRemaining: next);
+      }
+    });
   }
 
   void _startAutoSkipCountdown() {

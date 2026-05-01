@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/widgets/empty_state.dart';
 import '../../player/providers/player_provider.dart';
 import '../../stations/models/radio_station.dart';
 import '../../stations/widgets/station_card.dart';
@@ -25,7 +26,11 @@ class FavouritesTab extends ConsumerWidget {
     return favouritesAsync.when(
       data: (stations) {
         if (stations.isEmpty) {
-          return const _EmptyFavourites();
+          return const EmptyState(
+            icon: Icons.favorite_border,
+            title: 'No favourites yet',
+            subtitle: 'Tap the heart in the player to save a station',
+          );
         }
         return ListView.builder(
           itemCount: stations.length,
@@ -37,36 +42,6 @@ class FavouritesTab extends ConsumerWidget {
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('Error: $e')),
-    );
-  }
-}
-
-class _EmptyFavourites extends StatelessWidget {
-  const _EmptyFavourites();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.favorite_border, size: 64, color: Colors.grey[600]),
-            const SizedBox(height: 16),
-            const Text(
-              'No favourites yet',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Tap the heart in the player to save a station',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/widgets/empty_state.dart';
 import '../../player/providers/player_provider.dart';
 import '../models/radio_station.dart';
 import '../models/station_filters.dart';
@@ -163,13 +164,19 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
                     data: (stations) {
                       if (stations.isEmpty) {
                         return SliverFillRemaining(
-                          child: _EmptyState(
-                            onClear: () {
-                              _searchController.clear();
-                              ref.read(searchQueryProvider.notifier).state = '';
-                              ref.read(stationFiltersProvider.notifier).state =
-                                  const StationFilters(tags: []);
-                            },
+                          child: EmptyState(
+                            icon: Icons.radio,
+                            title: 'No stations found',
+                            subtitle: 'Try a different search or clear filters',
+                            action: ElevatedButton(
+                              onPressed: () {
+                                _searchController.clear();
+                                ref.read(searchQueryProvider.notifier).state = '';
+                                ref.read(stationFiltersProvider.notifier).state =
+                                    const StationFilters(tags: []);
+                              },
+                              child: const Text('Clear search & filters'),
+                            ),
                           ),
                         );
                       }
@@ -201,9 +208,14 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
                       ),
                     ),
                     error: (e, _) => SliverFillRemaining(
-                      child: _ErrorState(
-                        error: e,
-                        onRetry: () => ref.invalidate(stationsNotifierProvider),
+                      child: EmptyState(
+                        icon: Icons.wifi_off,
+                        title: 'Could not load stations',
+                        subtitle: 'Check your connection and try again',
+                        action: ElevatedButton(
+                          onPressed: () => ref.invalidate(stationsNotifierProvider),
+                          child: const Text('Retry'),
+                        ),
                       ),
                     ),
                   ),
@@ -217,74 +229,3 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.onClear});
-
-  final VoidCallback onClear;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.radio, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text(
-              'No stations found',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Try a different search or clear filters',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: onClear,
-              child: const Text('Clear search & filters'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.error, required this.onRetry});
-
-  final Object error;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.wifi_off, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text(
-              'Could not load stations',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Check your connection and try again',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
-          ],
-        ),
-      ),
-    );
-  }
-}

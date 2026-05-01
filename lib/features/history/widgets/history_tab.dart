@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/widgets/empty_state.dart';
 import '../../player/providers/player_provider.dart';
 import '../../stations/models/radio_station.dart';
 import '../../stations/widgets/station_card.dart';
@@ -29,7 +30,13 @@ class HistoryTab extends ConsumerWidget {
 
     return historyAsync.when(
       data: (entries) {
-        if (entries.isEmpty) return const _EmptyHistory();
+        if (entries.isEmpty) {
+          return const EmptyState(
+            icon: Icons.history,
+            title: 'No history yet',
+            subtitle: 'Stations you play will appear here',
+          );
+        }
         return ListView.builder(
           itemCount: entries.length,
           itemBuilder: (context, index) {
@@ -107,34 +114,4 @@ class _HistoryCard extends StatelessWidget {
     'Nov',
     'Dec',
   ][month - 1];
-}
-
-class _EmptyHistory extends StatelessWidget {
-  const _EmptyHistory();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.history, size: 64, color: Colors.grey[600]),
-            const SizedBox(height: 16),
-            const Text(
-              'No history yet',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Stations you play will appear here',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
