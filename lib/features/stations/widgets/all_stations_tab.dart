@@ -70,7 +70,10 @@ class _AllStationsTabState extends ConsumerState<AllStationsTab> {
   }
 
   void _onStationTap(RadioStation station) {
-    ref.read(playerNotifierProvider.notifier).play(station);
+    ref.read(playerNotifierProvider.notifier).play(
+      station,
+      source: PlaySource.stations,
+    );
     context.push('/player');
   }
 

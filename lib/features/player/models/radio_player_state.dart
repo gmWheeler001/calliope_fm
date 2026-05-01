@@ -11,6 +11,8 @@ class RadioPlayerState {
     this.errorMessage,
     this.autoSkipCountdown,
     this.hasVoted = false,
+    this.hasNext = false,
+    this.hasPrevious = false,
   });
 
   final RadioStation? station;
@@ -20,6 +22,8 @@ class RadioPlayerState {
   final String? errorMessage;
   final int? autoSkipCountdown;
   final bool hasVoted;
+  final bool hasNext;
+  final bool hasPrevious;
 
   bool get isPlaying => status == PlaybackStatus.playing;
   bool get hasStation => station != null;
@@ -33,6 +37,8 @@ class RadioPlayerState {
     String? errorMessage,
     int? autoSkipCountdown,
     bool? hasVoted,
+    bool? hasNext,
+    bool? hasPrevious,
     bool clearStation = false,
     bool clearError = false,
     bool clearCountdown = false,
@@ -46,6 +52,8 @@ class RadioPlayerState {
       autoSkipCountdown:
           clearCountdown ? null : (autoSkipCountdown ?? this.autoSkipCountdown),
       hasVoted: hasVoted ?? this.hasVoted,
+      hasNext: clearStation ? false : (hasNext ?? this.hasNext),
+      hasPrevious: clearStation ? false : (hasPrevious ?? this.hasPrevious),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../favourites/providers/favourites_provider.dart';
 import '../../history/providers/history_provider.dart';
 import '../../stations/models/radio_station.dart';
 import '../../stations/providers/stations_providers.dart';
@@ -12,12 +13,15 @@ import '../models/radio_player_state.dart';
 
 part 'player_provider.g.dart';
 
+enum PlaySource { stations, favourites, history }
+
 @Riverpod(keepAlive: true)
 class PlayerNotifier extends _$PlayerNotifier {
   late final AudioPlayer _player;
   StreamSubscription<dynamic>? _interruptionSub;
   Timer? _errorSkipTimer;
   String? _lastHistoryUuid;
+  PlaySource _source = PlaySource.stations;
 
   @override
   RadioPlayerState build() {
@@ -36,8 +40,9 @@ class PlayerNotifier extends _$PlayerNotifier {
 
   void _setupPlayerListeners() {
     _player.playerStateStream.listen((ps) {
-      if (state.hasError) return; // don't override error state with stale events
-      final buffering = ps.processingState == ProcessingState.buffering ||
+      if (state.hasError) return;
+      final buffering =
+          ps.processingState == ProcessingState.buffering ||
           ps.processingState == ProcessingState.loading;
       final PlaybackStatus status;
       switch (ps.processingState) {
@@ -79,8 +84,75 @@ class PlayerNotifier extends _$PlayerNotifier {
 
   // ── Public API ───────────────────────────────────────────────────────────────
 
-  Future<void> play(RadioStation station) async {
+  /// Called only when the user explicitly selects a station from a tab.
+  /// This is the only place _source should change.
+  Future<void> play(RadioStation station, {required PlaySource source}) async {
+    _source = source;
+    await _playStation(station);
+  }
+
+  Future<void> togglePlayPause() async {
+    if (_player.playing) {
+      await _player.pause();
+    } else {
+      if (state.hasError && state.station != null) {
+        await _playStation(state.station!);
+        return;
+      }
+      await _player.play();
+    }
+  }
+
+  void skipNext() {
+    if (!state.hasNext || state.station == null) return;
+    final list = _sourceList(_source);
+    final idx = list.indexWhere(
+      (s) => s.stationUuid == state.station!.stationUuid,
+    );
+    if (idx < 0 || idx >= list.length - 1) return;
+    _playStation(list[idx + 1]);
+  }
+
+  void skipPrevious() {
+    if (!state.hasPrevious || state.station == null) return;
+    final list = _sourceList(_source);
+    final idx = list.indexWhere(
+      (s) => s.stationUuid == state.station!.stationUuid,
+    );
+    if (idx <= 0) return;
+    _playStation(list[idx - 1]);
+  }
+
+  Future<void> setVolume(double volume) async {
+    await _player.setVolume(volume);
+    state = state.copyWith(volume: volume);
+  }
+
+  Future<void> retry() async {
     _errorSkipTimer?.cancel();
+    if (state.station != null) await _playStation(state.station!);
+  }
+
+  Future<void> vote() async {
+    if (state.hasVoted || state.station == null) return;
+    state = state.copyWith(hasVoted: true);
+    try {
+      await ref
+          .read(radioBrowserApiProvider)
+          .voteForStation(state.station!.stationUuid);
+    } catch (_) {
+      // vote failures are silent
+    }
+  }
+
+  // ── Private helpers ──────────────────────────────────────────────────────────
+
+  Future<void> _playStation(RadioStation station) async {
+    _errorSkipTimer?.cancel();
+
+    final list = _sourceList(_source);
+    final idx = list.indexWhere((s) => s.stationUuid == station.stationUuid);
+
     state = state.copyWith(
       station: station,
       status: PlaybackStatus.loading,
@@ -88,6 +160,10 @@ class PlayerNotifier extends _$PlayerNotifier {
       clearError: true,
       clearCountdown: true,
       hasVoted: false,
+      hasNext: _source != PlaySource.history
+          ? idx >= 0 && idx < list.length - 1
+          : false,
+      hasPrevious: _source != PlaySource.history ? idx > 0 : false,
     );
 
     try {
@@ -112,63 +188,15 @@ class PlayerNotifier extends _$PlayerNotifier {
     }
   }
 
-  Future<void> togglePlayPause() async {
-    if (_player.playing) {
-      await _player.pause();
-    } else {
-      if (state.hasError && state.station != null) {
-        await play(state.station!);
-        return;
-      }
-      await _player.play();
-    }
-  }
-
-  void skipNext() {
-    final stations = ref.read(stationsNotifierProvider).valueOrNull ?? [];
-    if (stations.isEmpty) return;
-    if (state.station == null) {
-      play(stations.first);
-      return;
-    }
-    final idx = stations.indexWhere(
-      (s) => s.stationUuid == state.station!.stationUuid,
-    );
-    play(stations[(idx < 0 ? 0 : idx + 1) % stations.length]);
-  }
-
-  void skipPrevious() {
-    final stations = ref.read(stationsNotifierProvider).valueOrNull ?? [];
-    if (stations.isEmpty || state.station == null) return;
-    final idx = stations.indexWhere(
-      (s) => s.stationUuid == state.station!.stationUuid,
-    );
-    play(stations[idx <= 0 ? stations.length - 1 : idx - 1]);
-  }
-
-  Future<void> setVolume(double volume) async {
-    await _player.setVolume(volume);
-    state = state.copyWith(volume: volume);
-  }
-
-  Future<void> retry() async {
-    _errorSkipTimer?.cancel();
-    if (state.station != null) await play(state.station!);
-  }
-
-  Future<void> vote() async {
-    if (state.hasVoted || state.station == null) return;
-    state = state.copyWith(hasVoted: true);
-    try {
-      await ref
-          .read(radioBrowserApiProvider)
-          .voteForStation(state.station!.stationUuid);
-    } catch (_) {
-      // vote failures are silent
-    }
-  }
-
-  // ── Private helpers ──────────────────────────────────────────────────────────
+  List<RadioStation> _sourceList(PlaySource source) => switch (source) {
+    PlaySource.stations => ref.read(stationsNotifierProvider).valueOrNull ?? [],
+    PlaySource.favourites =>
+      ref.read(favouritesNotifierProvider).valueOrNull ?? [],
+    PlaySource.history =>
+      (ref.read(historyNotifierProvider).valueOrNull ?? [])
+          .map((e) => e.station)
+          .toList(),
+  };
 
   void _onStreamError() {
     _errorSkipTimer?.cancel();

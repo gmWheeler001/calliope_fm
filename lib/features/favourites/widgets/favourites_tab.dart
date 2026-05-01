@@ -11,7 +11,10 @@ class FavouritesTab extends ConsumerWidget {
   const FavouritesTab({super.key});
 
   void _onStationTap(BuildContext context, WidgetRef ref, RadioStation station) {
-    ref.read(playerNotifierProvider.notifier).play(station);
+    ref.read(playerNotifierProvider.notifier).play(
+      station,
+      source: PlaySource.favourites,
+    );
     context.push('/player');
   }
 

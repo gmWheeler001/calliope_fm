@@ -22,6 +22,10 @@ class MiniPlayer extends ConsumerWidget {
     final notifier = ref.read(playerNotifierProvider.notifier);
     final theme = Theme.of(context);
 
+    final subText =
+        '${station.country.isNotEmpty ? '${station.country} ' : ''}'
+        '${station.bitrate}kbps';
+
     return Padding(
       padding: const EdgeInsets.only(
         left: UiConstants.paddingFull,
@@ -48,7 +52,7 @@ class MiniPlayer extends ConsumerWidget {
               onTap: () => context.push('/player'),
               borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
               child: Container(
-                height: 114,
+                height: 116,
                 padding: const EdgeInsets.symmetric(
                   horizontal: UiConstants.paddingFull,
                   vertical: UiConstants.paddingFull,
@@ -108,18 +112,28 @@ class MiniPlayer extends ConsumerWidget {
                           else if (station.country.isNotEmpty ||
                               station.tagList.isNotEmpty)
                             Text(
-                              '${station.country.isNotEmpty ? station.country : ''}${station.country.isNotEmpty && station.tagList.isNotEmpty ? ' - ' : ''}${station.tagList.isNotEmpty ? station.tagList.join(', ') : ''}',
+                              subText,
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(color: Colors.white30),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
 
-                          SizedBox(height: 4),
-
-                          GradientSlider(
-                            volume: playerState.volume,
-                            onChanged: notifier.setVolume,
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.volume_mute,
+                                size: 12,
+                                applyTextScaling: false,
+                                color: Colors.white30,
+                              ),
+                              Expanded(
+                                child: GradientSlider(
+                                  volume: playerState.volume,
+                                  onChanged: notifier.setVolume,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -127,17 +141,24 @@ class MiniPlayer extends ConsumerWidget {
 
                     SizedBox(width: UiConstants.seperatorFull),
 
+                    // Player controlls
                     if (playerState.status == PlaybackStatus.loading)
                       const SizedBox(width: 30, height: 30)
                     else
-                      IconButton.filled(
-                        iconSize: 30,
-                        style: IconButton.styleFrom(
-                          backgroundColor: Colors.grey.shade900,
-                          foregroundColor: Colors.white70,
+                      AnimatedOpacity(
+                        opacity: playerState.hasPrevious ? 1.0 : 0.9,
+                        duration: const Duration(milliseconds: 300),
+                        child: IconButton.filled(
+                          iconSize: 30,
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.grey.shade900,
+                            foregroundColor: Colors.white70,
+                          ),
+                          icon: const Icon(Icons.skip_previous_rounded),
+                          onPressed: playerState.hasPrevious
+                              ? notifier.skipPrevious
+                              : null,
                         ),
-                        icon: const Icon(Icons.skip_previous_rounded),
-                        onPressed: notifier.skipPrevious,
                       ),
 
                     SizedBox(width: UiConstants.seperatorFull),
@@ -179,14 +200,20 @@ class MiniPlayer extends ConsumerWidget {
                     if (playerState.status == PlaybackStatus.loading)
                       const SizedBox(width: 30, height: 30)
                     else
-                      IconButton.filled(
-                        iconSize: 30,
-                        style: IconButton.styleFrom(
-                          backgroundColor: Colors.grey.shade900,
-                          foregroundColor: Colors.white70,
+                      AnimatedOpacity(
+                        opacity: playerState.hasNext ? 1.0 : 0.9,
+                        duration: const Duration(milliseconds: 300),
+                        child: IconButton.filled(
+                          iconSize: 30,
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.grey.shade900,
+                            foregroundColor: Colors.white70,
+                          ),
+                          icon: const Icon(Icons.skip_next_rounded),
+                          onPressed: playerState.hasNext
+                              ? notifier.skipNext
+                              : null,
                         ),
-                        icon: const Icon(Icons.skip_next_rounded),
-                        onPressed: notifier.skipNext,
                       ),
                   ],
                 ),

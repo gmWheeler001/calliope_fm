@@ -31,25 +31,33 @@ final stationFiltersProvider = StateProvider<StationFilters>(
 const genres = [
   'all',
   'news',
+  'music',
   'pop',
   'rock',
   'jazz',
+  'blues',
   'classical',
   'country',
+  'classic rock',
   'electronic',
+  'retrowave',
+  'synthwave',
   'hip-hop',
   'indie',
   'metal',
+  'punk',
   'folk',
+  'oldies',
   'reggae',
   'soul',
   'blues',
   'talk',
+  'top hits',
 ];
 
 // ── Stations list (paginated) ────────────────────────────────────────────────
 
-@riverpod
+@Riverpod(keepAlive: true)
 class StationsNotifier extends _$StationsNotifier {
   bool _hasMore = true;
   int _offset = 0;

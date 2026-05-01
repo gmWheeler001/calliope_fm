@@ -7,6 +7,13 @@ import '../providers/stations_providers.dart';
 class GenreChips extends ConsumerWidget {
   const GenreChips({super.key});
 
+  String capitalizeFirstLetter(String word) {
+    if (word.isEmpty || word.length < 2) {
+      return word;
+    }
+    return word[0].toUpperCase() + word.substring(1);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(stationFiltersProvider);
@@ -67,7 +74,7 @@ class GenreChips extends ConsumerWidget {
                 border: Border.all(color: Colors.white.withAlpha(17)),
               ),
               child: Text(
-                genre,
+                capitalizeFirstLetter(genre),
                 style: TextStyle(
                   color: selected ? Colors.white : Colors.white.withAlpha(200),
                   fontWeight: FontWeight.w500,

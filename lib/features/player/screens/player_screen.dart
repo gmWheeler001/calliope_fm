@@ -239,20 +239,28 @@ class _PlaybackControls extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        IconButton(
-          iconSize: 40,
-          icon: const Icon(Icons.skip_previous_rounded),
-          onPressed: notifier.skipPrevious,
+        AnimatedOpacity(
+          opacity: playerState.hasPrevious ? 1.0 : 0.15,
+          duration: const Duration(milliseconds: 300),
+          child: IconButton(
+            iconSize: 40,
+            icon: const Icon(Icons.skip_previous_rounded),
+            onPressed: playerState.hasPrevious ? notifier.skipPrevious : null,
+          ),
         ),
         _PlayPauseButton(
           isPlaying: playerState.isPlaying,
           isLoading: isLoading,
           onPressed: notifier.togglePlayPause,
         ),
-        IconButton(
-          iconSize: 40,
-          icon: const Icon(Icons.skip_next_rounded),
-          onPressed: notifier.skipNext,
+        AnimatedOpacity(
+          opacity: playerState.hasNext ? 1.0 : 0.15,
+          duration: const Duration(milliseconds: 300),
+          child: IconButton(
+            iconSize: 40,
+            icon: const Icon(Icons.skip_next_rounded),
+            onPressed: playerState.hasNext ? notifier.skipNext : null,
+          ),
         ),
       ],
     );

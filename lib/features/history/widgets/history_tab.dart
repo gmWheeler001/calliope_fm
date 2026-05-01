@@ -12,7 +12,10 @@ class HistoryTab extends ConsumerWidget {
   const HistoryTab({super.key});
 
   void _onStationTap(BuildContext context, WidgetRef ref, RadioStation station) {
-    ref.read(playerNotifierProvider.notifier).play(station);
+    ref.read(playerNotifierProvider.notifier).play(
+      station,
+      source: PlaySource.history,
+    );
     context.push('/player');
   }
 
