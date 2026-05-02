@@ -125,6 +125,8 @@ Development was sequenced intentionally: **functionality first, then UI and UX p
 
 17. **Documentation** — README and this file.
 
+18. **Last minute fixes** - small fix to bug found during testing where a possible oveerflow can appear in the player screen if all controlls are in use with error
+
 ---
 
 ## Reflection

@@ -99,10 +99,31 @@ class PlayerScreen extends ConsumerWidget {
                       ),
                       child: Column(
                         children: [
-                          const Spacer(flex: 2),
-                          _ArtworkWidget(
-                            artUri: station?.faviconUrl,
-                            isBuffering: playerState.isBuffering,
+                          // Artwork fills remaining vertical space, shrinks when
+                          // banners (error, sleep timer) push in from below.
+                          Flexible(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final ideal =
+                                    MediaQuery.sizeOf(context).width * 0.65;
+                                final size =
+                                    (constraints.maxHeight -
+                                            UiConstants.paddingDouble)
+                                        .clamp(80.0, ideal);
+                                return Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: UiConstants.paddingFull,
+                                    ),
+                                    child: _ArtworkWidget(
+                                      artUri: station?.faviconUrl,
+                                      isBuffering: playerState.isBuffering,
+                                      size: size,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
 
                           if (station != null) ...[
@@ -160,7 +181,7 @@ class PlayerScreen extends ConsumerWidget {
                             notifier: notifier,
                           ),
 
-                          SizedBox(height: UiConstants.paddingFull),
+                          const SizedBox(height: UiConstants.paddingFull),
 
                           Row(
                             mainAxisSize: MainAxisSize.min,
@@ -207,7 +228,7 @@ class PlayerScreen extends ConsumerWidget {
                               remaining: playerState.sleepTimerRemaining!,
                               onCancel: notifier.cancelSleepTimer,
                             ),
-                          const Spacer(flex: 3),
+                          const SizedBox(height: UiConstants.paddingFull),
                         ],
                       ),
                     ),
@@ -223,14 +244,18 @@ class PlayerScreen extends ConsumerWidget {
 }
 
 class _ArtworkWidget extends StatelessWidget {
-  const _ArtworkWidget({required this.artUri, required this.isBuffering});
+  const _ArtworkWidget({
+    required this.artUri,
+    required this.isBuffering,
+    required this.size,
+  });
 
   final String? artUri;
   final bool isBuffering;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size.width * 0.65;
     return Stack(
       alignment: Alignment.center,
       children: [
