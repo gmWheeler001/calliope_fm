@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:calliope_fm/core/constants/ui_constants.dart';
-import 'package:calliope_fm/features/player/widgets/gradient_slider.dart';
 import 'package:calliope_fm/core/widgets/radio_artwork_placeholder.dart';
+import 'package:calliope_fm/features/player/widgets/gradient_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,20 +27,16 @@ class MiniPlayer extends ConsumerWidget {
         '${station.country.isNotEmpty ? '${station.country} ' : ''}'
         '${station.bitrate}kbps';
 
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: UiConstants.paddingFull,
-        right: UiConstants.paddingFull,
-      ),
-      child: ClipRRect(
-        // Clips blur to rounded corners
-        borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
+    final artSize =
+        (MediaQuery.sizeOf(context).width - UiConstants.paddingDouble * 2) / 5;
 
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: UiConstants.paddingFull),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
         child: BackdropFilter(
-          // Blurs whatever is below
           filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
           child: Container(
-            // glass tint + border on top of blur
             decoration: BoxDecoration(
               color: Colors.deepPurple.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(UiConstants.cardCornerRadius),
@@ -55,17 +51,17 @@ class MiniPlayer extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: UiConstants.paddingFull,
-                  vertical: UiConstants.paddingFull,
+                  vertical: UiConstants.paddingHalf,
                 ),
                 child: Row(
                   children: [
-                    // Artwork thumbnail
+                    // Artwork
                     ClipRRect(
                       borderRadius: BorderRadius.circular(
                         UiConstants.cardCornerRadius / 2,
                       ),
                       child: SizedBox.square(
-                        dimension: 60,
+                        dimension: artSize,
                         child: station.faviconUrl != null
                             ? CachedNetworkImage(
                                 imageUrl: station.faviconUrl!,
@@ -78,8 +74,10 @@ class MiniPlayer extends ConsumerWidget {
                             : const RadioArtworkPlaceholder(),
                       ),
                     ),
+
                     const SizedBox(width: UiConstants.seperatorFull),
-                    // Station name + buffering/error indicator
+
+                    // Station info + controls
                     Expanded(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -91,126 +89,156 @@ class MiniPlayer extends ConsumerWidget {
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
                           ),
-                          if (playerState.hasError)
-                            Text(
-                              playerState.autoSkipCountdown != null
-                                  ? 'Skipping in ${playerState.autoSkipCountdown}s...'
-                                  : 'Stream error',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.error,
-                              ),
-                            )
-                          else if (playerState.isBuffering)
-                            Text(
-                              'Buffering…',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(color: Colors.white30),
-                            )
-                          else if (station.country.isNotEmpty ||
-                              station.tagList.isNotEmpty)
-                            Text(
-                              subText,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(color: Colors.white30),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
 
+                          const SizedBox(height: UiConstants.seperatorHalf),
+
+                          // Status text + skip/play buttons
                           Row(
                             children: [
-                              Icon(
-                                Icons.volume_mute,
-                                size: 12,
-                                applyTextScaling: false,
-                                color: Colors.white30,
-                              ),
                               Expanded(
-                                child: IgnorePointer(
-                                  child: GradientSlider(
-                                    volume: playerState.volume,
-                                    onChanged: notifier.setVolume,
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (playerState.hasError)
+                                      Text(
+                                        playerState.autoSkipCountdown != null
+                                            ? 'Skipping in ${playerState.autoSkipCountdown}s...'
+                                            : 'Stream error',
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: theme.colorScheme.error,
+                                            ),
+                                      )
+                                    else if (playerState.isBuffering)
+                                      Text(
+                                        'Buffering…',
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(color: Colors.white30),
+                                      )
+                                    else if (station.country.isNotEmpty ||
+                                        station.tagList.isNotEmpty)
+                                      Text(
+                                        subText,
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(color: Colors.white30),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                  ],
                                 ),
                               ),
-                              SizedBox(width: UiConstants.seperatorHalf),
+
+                              const SizedBox(width: UiConstants.seperatorHalf),
+
+                              if (playerState.status == PlaybackStatus.loading)
+                                const SizedBox(width: 30, height: 30)
+                              else
+                                AnimatedOpacity(
+                                  opacity: playerState.hasPrevious ? 1.0 : 0.4,
+                                  duration: const Duration(milliseconds: 300),
+                                  child: IconButton.filled(
+                                    iconSize: 30,
+                                    style: IconButton.styleFrom(
+                                      backgroundColor: Colors.grey.shade900,
+                                      foregroundColor: Colors.white70,
+                                    ),
+                                    icon: const Icon(
+                                      Icons.skip_previous_rounded,
+                                    ),
+                                    onPressed: playerState.hasPrevious
+                                        ? notifier.skipPrevious
+                                        : null,
+                                  ),
+                                ),
+
+                              const SizedBox(width: UiConstants.seperatorFull),
+
+                              if (playerState.status == PlaybackStatus.loading)
+                                const SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              else
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: UiConstants.purpleGradient,
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      playerState.isPlaying
+                                          ? Icons.pause_rounded
+                                          : Icons.play_arrow_rounded,
+                                    ),
+                                    iconSize: 32,
+                                    color: Colors.white,
+                                    onPressed: notifier.togglePlayPause,
+                                  ),
+                                ),
+
+                              const SizedBox(width: UiConstants.seperatorFull),
+
+                              if (playerState.status == PlaybackStatus.loading)
+                                const SizedBox(width: 30, height: 30)
+                              else
+                                AnimatedOpacity(
+                                  opacity: playerState.hasNext ? 1.0 : 0.4,
+                                  duration: const Duration(milliseconds: 300),
+                                  child: IconButton.filled(
+                                    iconSize: 30,
+                                    style: IconButton.styleFrom(
+                                      backgroundColor: Colors.grey.shade900,
+                                      foregroundColor: Colors.white70,
+                                    ),
+                                    icon: const Icon(Icons.skip_next_rounded),
+                                    onPressed: playerState.hasNext
+                                        ? notifier.skipNext
+                                        : null,
+                                  ),
+                                ),
                             ],
+                          ),
+
+                          // Volume (display only — interaction blocked)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              top: UiConstants.seperatorFull,
+                              bottom: UiConstants.seperatorHalf,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.volume_down,
+                                  size: 15,
+                                  applyTextScaling: false,
+                                  color: Colors.white30,
+                                ),
+                                Expanded(
+                                  child: IgnorePointer(
+                                    child: GradientSlider(
+                                      volume: playerState.volume,
+                                      onChanged: notifier.setVolume,
+                                    ),
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.volume_up,
+                                  size: 15,
+                                  applyTextScaling: false,
+                                  color: Colors.white30,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-
-                    SizedBox(width: UiConstants.seperatorHalf),
-
-                    // Skip previous / next
-                    if (playerState.status == PlaybackStatus.loading)
-                      const SizedBox(width: 30, height: 30)
-                    else
-                      AnimatedOpacity(
-                        opacity: playerState.hasPrevious ? 1.0 : 0.9,
-                        duration: const Duration(milliseconds: 300),
-                        child: IconButton.filled(
-                          iconSize: 30,
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.grey.shade900,
-                            foregroundColor: Colors.white70,
-                          ),
-                          icon: const Icon(Icons.skip_previous_rounded),
-                          onPressed: playerState.hasPrevious
-                              ? notifier.skipPrevious
-                              : null,
-                        ),
-                      ),
-
-                    SizedBox(width: UiConstants.seperatorFull),
-
-                    // Play/pause or loading indicator
-                    if (playerState.status == PlaybackStatus.loading)
-                      const SizedBox(
-                        width: 30,
-                        height: 30,
-                        child: CircularProgressIndicator(strokeWidth: 2.5),
-                      )
-                    else
-                      Container(
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: UiConstants.purpleGradient,
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            playerState.isPlaying
-                                ? Icons.pause_rounded
-                                : Icons.play_arrow_rounded,
-                          ),
-                          iconSize: 32,
-                          color: Colors.white,
-                          onPressed: notifier.togglePlayPause,
-                        ),
-                      ),
-
-                    SizedBox(width: UiConstants.seperatorFull),
-
-                    if (playerState.status == PlaybackStatus.loading)
-                      const SizedBox(width: 30, height: 30)
-                    else
-                      AnimatedOpacity(
-                        opacity: playerState.hasNext ? 1.0 : 0.9,
-                        duration: const Duration(milliseconds: 300),
-                        child: IconButton.filled(
-                          iconSize: 30,
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.grey.shade900,
-                            foregroundColor: Colors.white70,
-                          ),
-                          icon: const Icon(Icons.skip_next_rounded),
-                          onPressed: playerState.hasNext
-                              ? notifier.skipNext
-                              : null,
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -221,4 +249,3 @@ class MiniPlayer extends ConsumerWidget {
     );
   }
 }
-

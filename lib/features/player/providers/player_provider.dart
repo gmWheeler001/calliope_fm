@@ -188,6 +188,11 @@ class PlayerNotifier extends _$PlayerNotifier {
       hasPrevious: _source != PlaySource.history ? idx > 0 : false,
     );
 
+    if (station.streamUrl.isEmpty) {
+      _onStreamError();
+      return;
+    }
+
     try {
       await _player.setAudioSource(
         AudioSource.uri(

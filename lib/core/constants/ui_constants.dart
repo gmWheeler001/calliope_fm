@@ -25,6 +25,11 @@ abstract final class UiConstants {
   // Glass surface — white at 28% opacity
   static const Color glassOutlineColor = Color(0x47FFFFFF);
 
+  // Chip colours
+  static const Color chipInactiveBackground = Color(0x2C000000);
+  static const Color chipBorder = Color(0x11FFFFFF);
+  static const Color chipInactiveText = Color(0xC8FFFFFF);
+
   // Reusable gradient used on buttons, sliders, artwork backgrounds
   static const LinearGradient purpleGradient = LinearGradient(
     begin: Alignment.topLeft,

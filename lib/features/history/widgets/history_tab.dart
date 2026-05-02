@@ -49,7 +49,11 @@ class HistoryTab extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Error: $e')),
+      error: (e, _) => const EmptyState(
+        icon: Icons.history_toggle_off,
+        title: 'Could not load history',
+        subtitle: 'Check your connection and try again',
+      ),
     );
   }
 }

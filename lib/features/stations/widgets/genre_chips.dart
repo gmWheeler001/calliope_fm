@@ -61,14 +61,14 @@ class GenreChips extends ConsumerWidget {
                   UiConstants.buttonCornerRadius,
                 ),
                 gradient: selected ? UiConstants.purpleGradient : null,
-                color: selected ? null : Colors.black.withAlpha(44),
-                border: Border.all(color: Colors.white.withAlpha(17)),
+                color: selected ? null : UiConstants.chipInactiveBackground,
+                border: Border.all(color: UiConstants.chipBorder),
               ),
               child: Text(
                 capitalizeFirstLetter(genre),
                 style: TextStyle(
                   fontSize: 14,
-                  color: selected ? Colors.white : Colors.white.withAlpha(200),
+                  color: selected ? Colors.white : UiConstants.chipInactiveText,
                   fontWeight: FontWeight.w500,
                 ),
                 maxLines: 1,

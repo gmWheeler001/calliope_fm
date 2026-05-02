@@ -443,11 +443,7 @@ class _VolumeSlider extends StatelessWidget {
         children: [
           const Icon(Icons.volume_down_rounded, color: Colors.white38),
           Expanded(
-            child: GradientSlider(
-              volume: volume,
-              onChanged: onChanged,
-              showThumb: true,
-            ),
+            child: GradientSlider(volume: volume, onChanged: onChanged),
           ),
           const Icon(Icons.volume_up_rounded, color: Colors.white38),
         ],

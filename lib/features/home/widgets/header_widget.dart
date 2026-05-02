@@ -132,7 +132,6 @@ class _HeaderIconButton extends StatelessWidget {
     return IconButton(
       iconSize: 22,
       style: IconButton.styleFrom(
-        // backgroundColor: Colors.grey.shade900,
         foregroundColor: Colors.white38,
       ),
       icon: Icon(icon),

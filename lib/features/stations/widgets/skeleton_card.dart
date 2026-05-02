@@ -10,7 +10,10 @@ class SkeletonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: height,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: const EdgeInsets.symmetric(
+        horizontal: UiConstants.paddingFull,
+        vertical: UiConstants.seperatorHalf,
+      ),
       decoration: BoxDecoration(
         gradient: UiConstants.purpleGradient,
         borderRadius: BorderRadius.circular(UiConstants.buttonCornerRadius),

@@ -6,20 +6,15 @@ class GradientSlider extends StatelessWidget {
     super.key,
     required this.volume,
     required this.onChanged,
-    this.showThumb = false,
   });
 
   final double volume;
-  final bool showThumb;
   final ValueChanged<double> onChanged;
 
   @override
   Widget build(BuildContext context) {
     return SliderTheme(
       data: SliderTheme.of(context).copyWith(
-        thumbShape: showThumb
-            ? null
-            : SliderComponentShape.noThumb, // removes thumb
         overlayShape: SliderComponentShape.noOverlay, // removes ripple
         trackHeight: 6,
         trackShape: _GradientTrackShape(), // custom gradient track
@@ -28,7 +23,9 @@ class GradientSlider extends StatelessWidget {
       child: Slider(
         value: volume,
         onChanged: onChanged,
-        thumbColor: showThumb ? Colors.white : Colors.transparent,
+        thumbColor:
+            // Slightly off white to help not draw the eye too strongly.
+            Colors.grey.shade300,
         allowedInteraction: null,
       ),
     );
