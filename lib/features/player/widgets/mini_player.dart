@@ -21,6 +21,7 @@ class MiniPlayer extends ConsumerWidget {
 
     final station = playerState.station!;
     final notifier = ref.read(playerNotifierProvider.notifier);
+    final volume = ref.watch(playerVolumeProvider);
     final theme = Theme.of(context);
 
     final subText =
@@ -221,7 +222,7 @@ class MiniPlayer extends ConsumerWidget {
                                 ),
                                 Expanded(
                                   child: GradientSlider(
-                                    volume: playerState.volume,
+                                    volume: volume,
                                     onChanged: notifier.setVolume,
                                   ),
                                 ),

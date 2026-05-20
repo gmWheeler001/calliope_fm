@@ -7,7 +7,6 @@ class RadioPlayerState {
     this.station,
     this.status = PlaybackStatus.idle,
     this.isBuffering = false,
-    this.volume = 1.0,
     this.errorMessage,
     this.autoSkipCountdown,
     this.hasVoted = false,
@@ -19,7 +18,6 @@ class RadioPlayerState {
   final RadioStation? station;
   final PlaybackStatus status;
   final bool isBuffering;
-  final double volume;
   final String? errorMessage;
   final int? autoSkipCountdown;
   final bool hasVoted;
@@ -36,7 +34,6 @@ class RadioPlayerState {
     RadioStation? station,
     PlaybackStatus? status,
     bool? isBuffering,
-    double? volume,
     String? errorMessage,
     int? autoSkipCountdown,
     bool? hasVoted,
@@ -52,7 +49,6 @@ class RadioPlayerState {
       station: clearStation ? null : (station ?? this.station),
       status: status ?? this.status,
       isBuffering: isBuffering ?? this.isBuffering,
-      volume: volume ?? this.volume,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       autoSkipCountdown:
           clearCountdown ? null : (autoSkipCountdown ?? this.autoSkipCountdown),

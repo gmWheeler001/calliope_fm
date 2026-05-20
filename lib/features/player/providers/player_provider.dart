@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/constants/app_constants.dart';
@@ -15,6 +16,15 @@ import '../models/radio_player_state.dart';
 part 'player_provider.g.dart';
 
 enum PlaySource { stations, favourites, history }
+
+// Isolated so volume slider changes don't rebuild the rest of the player UI.
+@riverpod
+class PlayerVolume extends _$PlayerVolume {
+  @override
+  double build() => 1.0;
+
+  void set(double value) => state = value;
+}
 
 @Riverpod(keepAlive: true)
 class PlayerNotifier extends _$PlayerNotifier {
@@ -129,7 +139,7 @@ class PlayerNotifier extends _$PlayerNotifier {
 
   Future<void> setVolume(double volume) async {
     await _player.setVolume(volume);
-    state = state.copyWith(volume: volume);
+    ref.read(playerVolumeProvider.notifier).set(volume);
   }
 
   Future<void> retry() async {
@@ -139,7 +149,7 @@ class PlayerNotifier extends _$PlayerNotifier {
 
   void setSleepTimer(int minutes) {
     _sleepTimer?.cancel();
-    _preFadeVolume = state.volume;
+    _preFadeVolume = ref.read(playerVolumeProvider);
     state = state.copyWith(sleepTimerRemaining: Duration(minutes: minutes));
     _startSleepCountdown();
   }
@@ -147,12 +157,11 @@ class PlayerNotifier extends _$PlayerNotifier {
   void cancelSleepTimer() {
     _sleepTimer?.cancel();
     _sleepTimer = null;
-    if (state.volume != _preFadeVolume) {
+    if (ref.read(playerVolumeProvider) != _preFadeVolume) {
       _player.setVolume(_preFadeVolume);
-      state = state.copyWith(volume: _preFadeVolume, clearSleepTimer: true);
-    } else {
-      state = state.copyWith(clearSleepTimer: true);
+      ref.read(playerVolumeProvider.notifier).set(_preFadeVolume);
     }
+    state = state.copyWith(clearSleepTimer: true);
   }
 
   Future<void> vote() async {
@@ -250,17 +259,19 @@ class PlayerNotifier extends _$PlayerNotifier {
         timer.cancel();
         _player.pause();
         _player.setVolume(_preFadeVolume);
-        state = state.copyWith(volume: _preFadeVolume, clearSleepTimer: true);
+        ref.read(playerVolumeProvider.notifier).set(_preFadeVolume);
+        state = state.copyWith(clearSleepTimer: true);
       } else if (next.inSeconds <= fadeSecs) {
         if (!fadeStarted) {
-          // Snapshot the actual current volume when the fade window opens,
+          // Snapshot actual current volume when the fade window opens,
           // not when the timer was set — the user may have adjusted it since.
           fadeStarted = true;
-          _preFadeVolume = state.volume;
+          _preFadeVolume = ref.read(playerVolumeProvider);
         }
         final faded = _preFadeVolume * (next.inSeconds / fadeSecs);
         _player.setVolume(faded);
-        state = state.copyWith(sleepTimerRemaining: next, volume: faded);
+        ref.read(playerVolumeProvider.notifier).set(faded);
+        state = state.copyWith(sleepTimerRemaining: next);
       } else {
         state = state.copyWith(sleepTimerRemaining: next);
       }

@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:calliope_fm/core/constants/ui_constants.dart';
 import 'package:calliope_fm/core/widgets/gradient_blob.dart';
 import 'package:calliope_fm/core/widgets/station_badge.dart';
-import 'package:calliope_fm/features/player/widgets/gradient_slider.dart';
+import 'package:calliope_fm/features/player/screens/volume_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -166,10 +166,7 @@ class PlayerScreen extends ConsumerWidget {
                             ],
                           ],
 
-                          _VolumeSlider(
-                            volume: playerState.volume,
-                            onChanged: notifier.setVolume,
-                          ),
+                          VolumeSlider(),
 
                           if (playerState.hasError)
                             _ErrorBanner(
@@ -454,28 +451,28 @@ class _PlayPauseButton extends StatelessWidget {
   }
 }
 
-class _VolumeSlider extends StatelessWidget {
-  const _VolumeSlider({required this.volume, required this.onChanged});
+// class _VolumeSlider extends StatelessWidget {
+//   const _VolumeSlider({required this.volume, required this.onChanged});
 
-  final double volume;
-  final ValueChanged<double> onChanged;
+//   final double volume;
+//   final ValueChanged<double> onChanged;
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(UiConstants.paddingFull),
-      child: Row(
-        children: [
-          const Icon(Icons.volume_down_rounded, color: Colors.white38),
-          Expanded(
-            child: GradientSlider(volume: volume, onChanged: onChanged),
-          ),
-          const Icon(Icons.volume_up_rounded, color: Colors.white38),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.all(UiConstants.paddingFull),
+//       child: Row(
+//         children: [
+//           const Icon(Icons.volume_down_rounded, color: Colors.white38),
+//           Expanded(
+//             child: GradientSlider(volume: volume, onChanged: onChanged),
+//           ),
+//           const Icon(Icons.volume_up_rounded, color: Colors.white38),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class _ActionButton extends StatelessWidget {
   const _ActionButton({

@@ -7,7 +7,7 @@ part of 'favourites_provider.dart';
 // **************************************************************************
 
 String _$favouritesNotifierHash() =>
-    r'ac60bb8676f07628e192bb088e2b5f16dd3c4c96';
+    r'176d1fafd252c5cd84b60f66bfdfe758f70d0536';
 
 /// See also [FavouritesNotifier].
 @ProviderFor(FavouritesNotifier)

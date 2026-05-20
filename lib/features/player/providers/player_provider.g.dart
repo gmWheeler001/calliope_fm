@@ -6,7 +6,23 @@ part of 'player_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$playerNotifierHash() => r'2086c09e1755e94f6fbb193f052d2b14b87d8392';
+String _$playerVolumeHash() => r'213a5ef25c909b8712ae5d1a08d16167e0ea4f24';
+
+/// See also [PlayerVolume].
+@ProviderFor(PlayerVolume)
+final playerVolumeProvider =
+    AutoDisposeNotifierProvider<PlayerVolume, double>.internal(
+      PlayerVolume.new,
+      name: r'playerVolumeProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$playerVolumeHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$PlayerVolume = AutoDisposeNotifier<double>;
+String _$playerNotifierHash() => r'64355ae31c6844a59d38d18e8ff91f3aa13bab19';
 
 /// See also [PlayerNotifier].
 @ProviderFor(PlayerNotifier)
